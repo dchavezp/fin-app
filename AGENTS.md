@@ -70,3 +70,10 @@ Dependency graph: `server ← auth ← db ← env` (build order matters, turbo h
 - `packages/*/src/index.ts` is the default export entrypoint.
 - No `.env` files are committed (in `.gitignore`). Each app has its own `.env` (pre-existing).
 - `bts.jsonc` is scaffolding metadata — safe to delete.
+
+## Native architecture
+
+- Apply SOLID boundaries in native UI: components should stay declarative and render markup; move state transitions, form orchestration, API calls, navigation decisions, subscriptions, keyboard behavior, and derived business rules into focused custom hooks.
+- Keep custom hooks single-purpose with small return interfaces. Do not extract trivial one-line state unless it reduces component responsibility or improves reuse/testability.
+- Use feature folders for feature-specific native code: `apps/native/features/{feature}/components`, `hooks`, `schemas`, `constants`, and `utils`. Keep `apps/native/components` for app-wide reusable UI only.
+- Define schemas, constants, and pure utilities once in the feature folder and import them. Do not duplicate validation rules or bury reusable helpers inside components/hooks.

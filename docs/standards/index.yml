@@ -21,7 +21,7 @@ native:
   expo-router:
     description: Stack > Drawer > Tabs navigation hierarchy
   hooks-architecture:
-    description: Custom hook patterns, event cleanup, state storage strategy
+    description: SOLID custom hook boundaries, event cleanup, state storage strategy
   performance:
     description: FlashList and expo-image performance standards
   theme-tokens:

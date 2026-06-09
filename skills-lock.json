@@ -1,65 +1,65 @@
 {
-	"version": 1,
-	"skills": {
-		"better-auth-best-practices": {
-			"source": "better-auth/skills",
-			"sourceType": "github",
-			"skillPath": "better-auth/best-practices/SKILL.md",
-			"computedHash": "a4c830509e85557b59339d8d93a4e243e9e59c686e7678854d39230e12c2a6dc"
-		},
-		"building-native-ui": {
-			"source": "expo/skills",
-			"sourceType": "github",
-			"skillPath": "plugins/expo/skills/building-native-ui/SKILL.md",
-			"computedHash": "342df93f481a0dba919f372d6c7b40d2b4bf5b51dd24363aea2e5d0bae27a6fa"
-		},
-		"expo-cicd-workflows": {
-			"source": "expo/skills",
-			"sourceType": "github",
-			"skillPath": "plugins/expo/skills/expo-cicd-workflows/SKILL.md",
-			"computedHash": "700b20b575fcbe75ad238b41a0bd57938abe495e62dc53e05400712ab01ee7c0"
-		},
-		"expo-deployment": {
-			"source": "expo/skills",
-			"sourceType": "github",
-			"skillPath": "plugins/expo/skills/expo-deployment/SKILL.md",
-			"computedHash": "9ea9f16374765c1b16764a51bd43a64098921b33f48e94d9c5c1cce24b335c10"
-		},
-		"expo-dev-client": {
-			"source": "expo/skills",
-			"sourceType": "github",
-			"skillPath": "plugins/expo/skills/expo-dev-client/SKILL.md",
-			"computedHash": "234e2633b7fbcef2d479f8fe8ab20d53d08ed3e4beec7c965da4aff5b43affe7"
-		},
-		"hono": {
-			"source": "yusukebe/hono-skill",
-			"sourceType": "github",
-			"skillPath": "skills/hono/SKILL.md",
-			"computedHash": "220e5e1b12bbaeec49ec362b6e2262d77632d0536e9758bba9acbbc323fef990"
-		},
-		"native-data-fetching": {
-			"source": "expo/skills",
-			"sourceType": "github",
-			"skillPath": "plugins/expo/skills/native-data-fetching/SKILL.md",
-			"computedHash": "3cd0ba91f359f9f84cd40f36f356287994a0e952520fac6e03ef7952d0397879"
-		},
-		"react-native-best-practices": {
-			"source": "callstackincubator/agent-skills",
-			"sourceType": "github",
-			"skillPath": "skills/react-native-best-practices/SKILL.md",
-			"computedHash": "15bd57b18d9ad0dcd003bd2c7ec6ed17d813cc671dd4d423e1d904d2a7b9d2bb"
-		},
-		"turborepo": {
-			"source": "vercel/turborepo",
-			"sourceType": "github",
-			"skillPath": "skills/turborepo/SKILL.md",
-			"computedHash": "b7c3165ae67a2892d6195a5b2cba15c8d96341f5c64ddd0d3ce4225c94a2ae83"
-		},
-		"vercel-react-native-skills": {
-			"source": "vercel-labs/agent-skills",
-			"sourceType": "github",
-			"skillPath": "skills/react-native-skills/SKILL.md",
-			"computedHash": "41d24eafa7c3d82e270439808f7cfbc4d51aeb2d14f2809a2267c16275784d06"
-		}
-	}
+  "version": 1,
+  "skills": {
+    "better-auth-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/best-practices/SKILL.md",
+      "computedHash": "a4c830509e85557b59339d8d93a4e243e9e59c686e7678854d39230e12c2a6dc"
+    },
+    "building-native-ui": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/expo/skills/building-native-ui/SKILL.md",
+      "computedHash": "342df93f481a0dba919f372d6c7b40d2b4bf5b51dd24363aea2e5d0bae27a6fa"
+    },
+    "expo-cicd-workflows": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/expo/skills/expo-cicd-workflows/SKILL.md",
+      "computedHash": "700b20b575fcbe75ad238b41a0bd57938abe495e62dc53e05400712ab01ee7c0"
+    },
+    "expo-deployment": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/expo/skills/expo-deployment/SKILL.md",
+      "computedHash": "9ea9f16374765c1b16764a51bd43a64098921b33f48e94d9c5c1cce24b335c10"
+    },
+    "expo-dev-client": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/expo/skills/expo-dev-client/SKILL.md",
+      "computedHash": "234e2633b7fbcef2d479f8fe8ab20d53d08ed3e4beec7c965da4aff5b43affe7"
+    },
+    "hono": {
+      "source": "yusukebe/hono-skill",
+      "sourceType": "github",
+      "skillPath": "skills/hono/SKILL.md",
+      "computedHash": "220e5e1b12bbaeec49ec362b6e2262d77632d0536e9758bba9acbbc323fef990"
+    },
+    "native-data-fetching": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/expo/skills/native-data-fetching/SKILL.md",
+      "computedHash": "3cd0ba91f359f9f84cd40f36f356287994a0e952520fac6e03ef7952d0397879"
+    },
+    "react-native-best-practices": {
+      "source": "callstackincubator/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-native-best-practices/SKILL.md",
+      "computedHash": "15bd57b18d9ad0dcd003bd2c7ec6ed17d813cc671dd4d423e1d904d2a7b9d2bb"
+    },
+    "turborepo": {
+      "source": "vercel/turborepo",
+      "sourceType": "github",
+      "skillPath": "skills/turborepo/SKILL.md",
+      "computedHash": "b7c3165ae67a2892d6195a5b2cba15c8d96341f5c64ddd0d3ce4225c94a2ae83"
+    },
+    "vercel-react-native-skills": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-native-skills/SKILL.md",
+      "computedHash": "41d24eafa7c3d82e270439808f7cfbc4d51aeb2d14f2809a2267c16275784d06"
+    }
+  }
 }
