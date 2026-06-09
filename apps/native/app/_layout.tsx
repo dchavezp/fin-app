@@ -34,19 +34,18 @@ export default function RootLayout() {
 	const { isDarkColorScheme } = useColorScheme();
 
 	return (
-		<>
-			<ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-				<StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-				<GestureHandlerRootView style={styles.container}>
-					<Stack>
-						<Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-						<Stack.Screen
-							name="modal"
-							options={{ title: "Modal", presentation: "modal" }}
-						/>
-					</Stack>
-				</GestureHandlerRootView>
-			</ThemeProvider>
-		</>
+		<ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+			<StatusBar style={isDarkColorScheme ? "light" : "dark"} />
+			<GestureHandlerRootView style={styles.container}>
+				<Stack>
+					<Stack.Screen name="auth" options={{ headerShown: false }} />
+					<Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+					<Stack.Screen
+						name="modal"
+						options={{ title: "Modal", presentation: "modal" }}
+					/>
+				</Stack>
+			</GestureHandlerRootView>
+		</ThemeProvider>
 	);
 }

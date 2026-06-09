@@ -20,6 +20,17 @@ pnpm prepare          # init husky hooks
 
 Single-package filtering: `turbo -F <package-name> <task>`
 
+## Subagent workflow
+
+When a plan is approved and work moves into build mode, call the project subagents before or during implementation:
+
+- `native-agent` — use for tasks touching `apps/native/`, Expo Router, React Native UI, native auth client, forms, or theme tokens.
+- `be-agent` — use for tasks touching `apps/server/`, `packages/auth/`, `packages/db/`, `packages/env/`, Hono, Better Auth, Drizzle, or server env validation.
+- `qa-agent` — use after implementation for verification strategy, command results, regression risks, and testing gaps.
+- `review-agent` — use before final response for non-trivial changes to identify bugs, security issues, regressions, and missing tests.
+
+For full-stack work, call both `native-agent` and `be-agent`; then run `qa-agent` and `review-agent` after changes are implemented. Keep subagent use proportional for small fixes, but do not skip QA/review on significant feature work.
+
 ## Monorepo layout
 
 ```

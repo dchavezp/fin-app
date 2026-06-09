@@ -1,16 +1,23 @@
+import { type Href, useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Container } from "@/components/container";
-import { SignIn } from "@/components/sign-in";
-import { SignUp } from "@/components/sign-up";
 import { authClient } from "@/lib/auth-client";
 import { NAV_THEME } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
 
+const AUTH_ROUTE = "/auth" as Href;
+
 export default function Home() {
+	const router = useRouter();
 	const { colorScheme } = useColorScheme();
 	const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
 	const { data: session } = authClient.useSession();
+
+	async function handleSignOut() {
+		await authClient.signOut();
+		router.replace(AUTH_ROUTE);
+	}
 
 	return (
 		<Container>
@@ -54,7 +61,7 @@ export default function Home() {
 							<View>
 								<Pressable
 									style={[styles.outlinedButton, { borderColor: theme.text }]}
-									onPress={() => authClient.signOut()}
+									onPress={handleSignOut}
 								>
 									<Text style={{ color: theme.text, fontSize: 14 }}>
 										Sign Out
@@ -63,13 +70,6 @@ export default function Home() {
 							</View>
 						</View>
 					) : null}
-
-					{!session?.user && (
-						<>
-							<SignIn />
-							<SignUp />
-						</>
-					)}
 				</View>
 			</ScrollView>
 		</Container>

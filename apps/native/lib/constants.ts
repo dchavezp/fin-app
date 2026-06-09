@@ -16,3 +16,50 @@ export const NAV_THEME = {
 		text: "hsl(210 40% 98%)",
 	},
 };
+
+export const FIN_DATA_THEME = {
+	colors: {
+		background: "#020401",
+		black: "#050505",
+		checkbox: "#1A1A1A",
+		dividerText: "#343434",
+		error: "#FF5A5F",
+		errorBorder: "#562027",
+		errorSurface: "#2A0E12",
+		google: "#4285F4",
+		input: "#111111",
+		line: "#1B1B1B",
+		muted: "#858585",
+		panel: "#0B0B0B",
+		primary: "#CDF200",
+		text: "#F7F7F7",
+	},
+	radii: {
+		xs: 3,
+		md: 8,
+		lg: 9,
+	},
+	spacing: {
+		xs: 7,
+		sm: 8,
+		md: 12,
+		lg: 14,
+		xl: 18,
+		xxl: 40,
+	},
+	sizes: {
+		checkbox: 15,
+		inputHeight: 45,
+		logo: 42,
+		primaryButtonHeight: 51,
+		socialButtonHeight: 47,
+	},
+	typography: {
+		brand: 20,
+		button: 15,
+		body: 14,
+		caption: 12,
+		label: 11,
+		micro: 9,
+	},
+} as const;

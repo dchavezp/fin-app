@@ -43,11 +43,23 @@
 			"skillPath": "plugins/expo/skills/native-data-fetching/SKILL.md",
 			"computedHash": "3cd0ba91f359f9f84cd40f36f356287994a0e952520fac6e03ef7952d0397879"
 		},
+		"react-native-best-practices": {
+			"source": "callstackincubator/agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/react-native-best-practices/SKILL.md",
+			"computedHash": "15bd57b18d9ad0dcd003bd2c7ec6ed17d813cc671dd4d423e1d904d2a7b9d2bb"
+		},
 		"turborepo": {
 			"source": "vercel/turborepo",
 			"sourceType": "github",
 			"skillPath": "skills/turborepo/SKILL.md",
 			"computedHash": "b7c3165ae67a2892d6195a5b2cba15c8d96341f5c64ddd0d3ce4225c94a2ae83"
+		},
+		"vercel-react-native-skills": {
+			"source": "vercel-labs/agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/react-native-skills/SKILL.md",
+			"computedHash": "41d24eafa7c3d82e270439808f7cfbc4d51aeb2d14f2809a2267c16275784d06"
 		}
 	}
 }

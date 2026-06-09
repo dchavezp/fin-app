@@ -1,14 +1,31 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { type Href, Link, Redirect } from "expo-router";
 import { Drawer } from "expo-router/drawer";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { HeaderButton } from "@/components/header-button";
+import { authClient } from "@/lib/auth-client";
 import { NAV_THEME } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
+
+const AUTH_ROUTE = "/auth" as Href;
 
 const DrawerLayout = () => {
 	const { colorScheme } = useColorScheme();
 	const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
+	const { data: session, isPending } = authClient.useSession();
+
+	if (isPending) {
+		return (
+			<View style={[styles.loading, { backgroundColor: theme.background }]}>
+				<ActivityIndicator color={theme.primary} size="large" />
+			</View>
+		);
+	}
+
+	if (!session?.user) {
+		return <Redirect href={AUTH_ROUTE} />;
+	}
 
 	return (
 		<Drawer
@@ -57,5 +74,13 @@ const DrawerLayout = () => {
 		</Drawer>
 	);
 };
+
+const styles = StyleSheet.create({
+	loading: {
+		alignItems: "center",
+		flex: 1,
+		justifyContent: "center",
+	},
+});
 
 export default DrawerLayout;
