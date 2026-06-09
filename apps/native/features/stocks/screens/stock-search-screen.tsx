@@ -44,7 +44,10 @@ export function StockSearchScreen() {
           },
         ]}
       >
-        <Pressable onPress={() => router.back()} style={styles.headerAction}>
+        <Pressable
+          onPress={() => router.navigate("/(drawer)/(tabs)/home")}
+          style={styles.headerAction}
+        >
           <Ionicons name="arrow-back" size={22} color={theme.primary} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.text }]}>Search</Text>

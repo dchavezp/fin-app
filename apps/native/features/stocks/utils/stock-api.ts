@@ -3,8 +3,11 @@ import { env } from "@finn-app/env/native";
 import { authClient } from "@/lib/auth-client";
 
 import type {
+  EarningsResponse,
+  StockChartRange,
   StockDetailResponse,
   StockFilter,
+  StockHistoryResponse,
   StockListResponse,
 } from "../types";
 
@@ -70,6 +73,28 @@ export function fetchStocks(
 export function fetchStockDetail(symbol: string, signal?: AbortSignal) {
   return fetchJson<StockDetailResponse["data"]>(
     `/api/stocks/${encodeURIComponent(symbol)}`,
+    signal,
+  );
+}
+
+export function fetchStockEarnings(symbol: string, signal?: AbortSignal) {
+  return fetchJson<EarningsResponse["data"]>(
+    `/api/stocks/${encodeURIComponent(symbol)}/earnings`,
+    signal,
+  );
+}
+
+export function fetchStockHistory(
+  symbol: string,
+  range: StockChartRange,
+  signal?: AbortSignal,
+) {
+  const params = new URLSearchParams({
+    range,
+  });
+
+  return fetchJson<StockHistoryResponse["data"]>(
+    `/api/stocks/${encodeURIComponent(symbol)}/history?${params.toString()}`,
     signal,
   );
 }

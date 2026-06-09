@@ -1,6 +1,21 @@
 import { env } from "@finn-app/env/server";
 
-import type { StockFilter } from "./stocks.schema";
+import type { StockFilter, StockHistoryRange } from "./stocks.schema";
+
+const MOCK_BASE_PRICES: Record<string, number> = {
+  AAPL: 218,
+  MSFT: 468,
+  NVDA: 130,
+  AMZN: 215,
+  GOOGL: 195,
+  META: 565,
+  TSLA: 265,
+  AMD: 165,
+  NFLX: 720,
+  PLTR: 32,
+  INTC: 32,
+  JPM: 225,
+};
 
 const FINNHUB_BASE_URL = "https://finnhub.io/api/v1";
 const FINNHUB_CACHE = new Map<string, { data: unknown; expiresAt: number }>();
@@ -57,6 +72,17 @@ interface FinnhubProfileResponse {
   weburl: string;
 }
 
+interface FinnhubEarningResult {
+  actual: number;
+  estimate: number;
+  period: string;
+  quarter: number;
+  surprise: number;
+  surprisePercent: number;
+  symbol: string;
+  year: number;
+}
+
 export interface StockListItem {
   symbol: string;
   name: string;
@@ -87,7 +113,78 @@ export interface StockDetail {
   website: string | null;
   ipo: string | null;
   logoUrl: string | null;
+  shareOutstanding: number | null;
   initials: string;
+}
+
+export interface StockHistoryPoint {
+  close: number;
+  time: number;
+}
+
+export interface StockHistory {
+  points: StockHistoryPoint[];
+  range: StockHistoryRange;
+  resolution: string;
+  symbol: string;
+}
+
+export interface EarningResult {
+  actual: number;
+  estimate: number;
+  period: string;
+  quarter: number;
+  surprise: number;
+  surprisePercent: number;
+  symbol: string;
+  year: number;
+}
+
+function seededRandom(seed: number) {
+  let s = seed;
+  return () => {
+    s = (s * 1664525 + 1013904223) & 0x7fffffff;
+    return s / 0x7fffffff;
+  };
+}
+
+function generateMockPoints(
+  basePrice: number,
+  count: number,
+  volatility: number,
+  seed: number,
+) {
+  const rand = seededRandom(seed);
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const points: StockHistoryPoint[] = [];
+  let price = basePrice;
+  const secondsPerPoint = Math.floor((24 * 60 * 60) / count);
+
+  for (let index = count - 1; index >= 0; index -= 1) {
+    const time = nowSeconds - index * secondsPerPoint;
+    price += (rand() - 0.5) * volatility;
+
+    if (price < 1) {
+      price = 1;
+    }
+
+    points.push({ close: Math.round(price * 100) / 100, time });
+  }
+
+  return points;
+}
+
+function getMockConfig(range: StockHistoryRange) {
+  switch (range) {
+    case "1W":
+      return { count: 7, volatility: 4 };
+    case "1M":
+      return { count: 22, volatility: 3 };
+    case "1Y":
+      return { count: 52, volatility: 5 };
+    default:
+      return { count: 26, volatility: 2 };
+  }
 }
 
 function normalizeMarketCap(value: number | null | undefined) {
@@ -161,6 +258,7 @@ async function fetchFinnhub<T>(
   if (!response.ok) {
     throw new FinnhubError(
       `Finnhub request failed with status ${response.status}`,
+      response.status,
     );
   }
 
@@ -263,6 +361,27 @@ async function loadProfile(symbol: string) {
   return profile;
 }
 
+async function loadHistory(symbol: string, range: StockHistoryRange) {
+  const basePrice = MOCK_BASE_PRICES[symbol] ?? 150;
+  const config = getMockConfig(range);
+  const seed =
+    symbol.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) +
+    range.charCodeAt(1);
+  const points = generateMockPoints(
+    basePrice,
+    config.count,
+    config.volatility,
+    seed,
+  );
+
+  return {
+    points,
+    range,
+    resolution: "mock",
+    symbol,
+  } satisfies StockHistory;
+}
+
 async function loadSummaryForSymbol(
   symbol: string,
   searchResult: FinnhubSearchResult | null,
@@ -347,8 +466,40 @@ export async function getStockDetail(symbol: string): Promise<StockDetail> {
     website: profile.weburl || null,
     ipo: profile.ipo || null,
     logoUrl: profile.logo || null,
+    shareOutstanding: profile.shareOutstanding ?? null,
     initials: getInitials(profile.name || normalizedSymbol, normalizedSymbol),
   };
+}
+
+export async function getStockHistory(
+  symbol: string,
+  range: StockHistoryRange,
+): Promise<StockHistory> {
+  const normalizedSymbol = symbol.toUpperCase();
+
+  return loadHistory(normalizedSymbol, range);
+}
+
+export async function getStockEarnings(
+  symbol: string,
+): Promise<EarningResult[]> {
+  const normalizedSymbol = symbol.toUpperCase();
+  const results = await fetchFinnhub<FinnhubEarningResult[]>(
+    "/stock/earnings",
+    { symbol: normalizedSymbol, limit: "8" },
+    300_000,
+  );
+
+  return results.map((item) => ({
+    actual: item.actual,
+    estimate: item.estimate,
+    period: item.period,
+    quarter: item.quarter,
+    surprise: item.surprise,
+    surprisePercent: item.surprisePercent,
+    symbol: item.symbol,
+    year: item.year,
+  }));
 }
 
 export function toApiError(error: unknown) {

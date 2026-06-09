@@ -6,7 +6,12 @@ import { Container } from "@/components/container";
 import { FIN_DATA_THEME, getFinDataMode } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
 
+import { CompanyProfile } from "../components/company-profile";
+import { StockEarningsChart } from "../components/stock-earnings-chart";
+import { StockPriceChart } from "../components/stock-price-chart";
+import { useStockChart } from "../hooks/use-stock-chart";
 import { useStockDetail } from "../hooks/use-stock-detail";
+import { useStockEarnings } from "../hooks/use-stock-earnings";
 
 function formatCurrency(value: number, currency?: string | null) {
   return new Intl.NumberFormat("en-US", {
@@ -37,6 +42,21 @@ export function StockDetailScreen({ symbol }: { symbol: string }) {
   const { colorScheme } = useColorScheme();
   const theme = getFinDataMode(colorScheme);
   const { data, error, isError, isPending } = useStockDetail(symbol);
+  const {
+    chartData,
+    isError: isChartError,
+    isPending: isChartPending,
+    range,
+    rangeOptions,
+    setRange,
+    summary,
+    xLabels,
+  } = useStockChart(symbol);
+  const {
+    data: earningsData,
+    isError: isEarningsError,
+    isPending: isEarningsPending,
+  } = useStockEarnings(symbol);
   const isUp = (data?.changePercent || 0) >= 0;
 
   return (
@@ -79,44 +99,55 @@ export function StockDetailScreen({ symbol }: { symbol: string }) {
 
         {data ? (
           <>
-            <View
-              style={[
-                styles.heroCard,
-                {
-                  backgroundColor: theme.surface,
-                  borderColor: theme.cardBorder,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.badge,
-                  { backgroundColor: theme.surfaceContainerHigh },
-                ]}
-              >
-                <Text style={[styles.badgeText, { color: theme.primary }]}>
-                  {data.initials}
+            <View style={styles.priceRow}>
+              <View style={styles.priceRowLeft}>
+                <Text style={[styles.symbol, { color: theme.text }]}>
+                  {data.symbol}
+                </Text>
+                <Text style={[styles.name, { color: theme.textSecondary }]}>
+                  {data.name}
                 </Text>
               </View>
-              <Text style={[styles.symbol, { color: theme.text }]}>
-                {data.symbol}
-              </Text>
-              <Text style={[styles.name, { color: theme.textSecondary }]}>
-                {data.name}
-              </Text>
-              <Text style={[styles.price, { color: theme.text }]}>
-                {formatCurrency(data.price, data.currency)}
-              </Text>
-              <Text
-                style={[
-                  styles.changeText,
-                  { color: isUp ? theme.primary : theme.error },
-                ]}
-              >
-                {isUp ? "+" : ""}
-                {data.changePercent.toFixed(2)}% today
-              </Text>
+              <View style={styles.priceRowRight}>
+                <Text style={[styles.price, { color: theme.text }]}>
+                  {formatCurrency(data.price, data.currency)}
+                </Text>
+                <Text
+                  style={[
+                    styles.changeText,
+                    { color: isUp ? theme.primary : theme.error },
+                  ]}
+                >
+                  {isUp ? "+" : ""}
+                  {data.changePercent.toFixed(2)}%
+                </Text>
+              </View>
             </View>
+
+            <StockPriceChart
+              chartData={chartData}
+              isError={isChartError}
+              isPending={isChartPending}
+              onSelectRange={setRange}
+              range={range}
+              rangeOptions={rangeOptions}
+              summary={summary}
+              xLabels={xLabels}
+            />
+
+            <StockEarningsChart
+              data={earningsData}
+              isError={isEarningsError}
+              isPending={isEarningsPending}
+            />
+
+            <CompanyProfile
+              country={data.country}
+              industry={data.industry}
+              ipo={data.ipo}
+              shareOutstanding={data.shareOutstanding}
+              website={data.website}
+            />
 
             <View style={styles.statGrid}>
               {[
@@ -187,27 +218,20 @@ const styles = StyleSheet.create({
     fontSize: FIN_DATA_THEME.typography.body,
     fontWeight: "500",
   },
-  heroCard: {
-    alignItems: "center",
-    borderRadius: 20,
-    borderWidth: 1,
-    marginBottom: 16,
-    padding: 24,
+  priceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 20,
   },
-  badge: {
-    alignItems: "center",
-    borderRadius: 20,
-    height: 56,
-    justifyContent: "center",
-    marginBottom: 16,
-    width: 56,
+  priceRowLeft: {
+    flexShrink: 1,
   },
-  badgeText: {
-    fontSize: 18,
-    fontWeight: "800",
+  priceRowRight: {
+    alignItems: "flex-end",
   },
   symbol: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "800",
   },
   name: {
@@ -215,14 +239,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   price: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: "800",
-    marginTop: 18,
   },
   changeText: {
     fontSize: 16,
     fontWeight: "700",
-    marginTop: 8,
+    marginTop: 6,
   },
   statGrid: {
     flexDirection: "row",
