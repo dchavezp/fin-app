@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerToggleButton } from "@react-navigation/drawer";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Container } from "@/components/container";
 import { getFinDataMode } from "@/lib/constants";
@@ -13,6 +14,7 @@ import { ReportButton } from "../components/report-button";
 import { WatchlistSection } from "../components/watchlist-section";
 
 export function HomeScreen() {
+  const router = useRouter();
   const { colorScheme } = useColorScheme();
   const theme = getFinDataMode(colorScheme);
 
@@ -33,9 +35,12 @@ export function HomeScreen() {
         <Text style={[styles.brand, { color: theme.primary }]}>
           FinData Pro
         </Text>
-        <View style={styles.headerRight}>
+        <Pressable
+          onPress={() => router.push("/stocks")}
+          style={styles.headerRight}
+        >
           <Ionicons name="search-outline" size={22} color={theme.primary} />
-        </View>
+        </Pressable>
       </View>
 
       <ScrollView

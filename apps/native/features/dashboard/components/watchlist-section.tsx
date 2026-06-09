@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { memo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -8,6 +9,7 @@ import { useColorScheme } from "@/lib/use-color-scheme";
 import { useWatchlist } from "../hooks/use-watchlist";
 
 export const WatchlistSection = memo(function WatchlistSection() {
+  const router = useRouter();
   const { colorScheme } = useColorScheme();
   const theme = getFinDataMode(colorScheme);
   const { data: watchlist } = useWatchlist();
@@ -16,7 +18,7 @@ export const WatchlistSection = memo(function WatchlistSection() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={[styles.title, { color: theme.text }]}>Watchlist</Text>
-        <Pressable>
+        <Pressable onPress={() => router.push("/stocks")}>
           <Text style={[styles.seeAll, { color: theme.primary }]}>See All</Text>
         </Pressable>
       </View>
@@ -27,6 +29,9 @@ export const WatchlistSection = memo(function WatchlistSection() {
         return (
           <Pressable
             key={item.symbol}
+            onPress={() =>
+              router.push(`/stocks/${encodeURIComponent(item.symbol)}`)
+            }
             style={[
               styles.card,
               { backgroundColor: theme.surface, borderColor: theme.cardBorder },

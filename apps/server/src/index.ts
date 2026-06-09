@@ -1,9 +1,12 @@
 import { auth } from "@finn-app/auth";
 import { checkDatabaseConnection } from "@finn-app/db";
 import { env } from "@finn-app/env/server";
+import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+
+import { stocksRoutes } from "@/modules/stocks/stocks.routes";
 
 const app = new Hono();
 
@@ -19,6 +22,7 @@ app.use(
 );
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
+app.route("/api/stocks", stocksRoutes);
 
 app.get("/health", async (c) => {
   try {
@@ -34,7 +38,7 @@ app.get("/", (c) => {
   return c.text("OK");
 });
 
-import { serve } from "@hono/node-server";
+export type AppType = typeof app;
 
 await checkDatabaseConnection();
 

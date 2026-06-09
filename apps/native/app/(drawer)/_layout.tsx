@@ -134,6 +134,13 @@ const DrawerLayout = () => {
           ),
         }}
       />
+      <Drawer.Screen
+        name="stocks"
+        options={{
+          drawerItemStyle: { display: "none" },
+          headerShown: false,
+        }}
+      />
     </Drawer>
   );
 };
