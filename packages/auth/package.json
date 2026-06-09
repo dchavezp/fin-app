@@ -1,0 +1,25 @@
+{
+	"name": "@finn-app/auth",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		},
+		"./*": {
+			"default": "./src/*.ts"
+		}
+	},
+	"scripts": {},
+	"dependencies": {
+		"@better-auth/expo": "catalog:",
+		"@finn-app/db": "workspace:*",
+		"@finn-app/env": "workspace:*",
+		"better-auth": "catalog:",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@finn-app/config": "workspace:*",
+		"typescript": "catalog:"
+	}
+}

@@ -1,0 +1,30 @@
+api:
+  hono-rpc:
+    description: End-to-end type safety via Hono RPC client
+auth:
+  better-auth:
+    description: Better-Auth cookie settings, trusted origins, Expo plugin config
+global:
+  biome:
+    description: Biome lint/format rules, running conventions
+  directory-structure:
+    description: Monorepo layout for server, mobile, and shared packages
+  env-validation:
+    description: @t3-oss/env-core split into server/native exports
+  factory-singleton:
+    description: Factory function + singleton pattern for shared state packages
+  quality-controls:
+    description: Husky commit hooks, lint-staged, type checking, build pipeline
+  testing:
+    description: Three-tier testing strategy (Vitest, RNTL, Maestro)
+native:
+  expo-router:
+    description: Stack > Drawer > Tabs navigation hierarchy
+  hooks-architecture:
+    description: Custom hook patterns, event cleanup, state storage strategy
+  performance:
+    description: FlashList and expo-image performance standards
+  theme-tokens:
+    description: Uppercase 6-char hex color tokens with light/dark variants
+  ui-constraints:
+    description: RN layout rules, StyleSheet, color tokens, component patterns

@@ -1,0 +1,29 @@
+{
+	"skill_name": "agent-os",
+	"evals": [
+		{
+			"id": 1,
+			"prompt": "I need to plan a new user authentication feature for my app. Can you run /shape-spec to help me structure this?",
+			"expected_output": "Should run shape-spec command workflow, asking user about scope, visuals, references, checking product context, and creating a spec folder structure",
+			"files": []
+		},
+		{
+			"id": 2,
+			"prompt": "I want to set up product documentation for my project. Run /plan-product to create mission, roadmap, and tech-stack files.",
+			"expected_output": "Should run plan-product workflow, checking for existing docs, gathering product vision, roadmap, and tech stack info",
+			"files": []
+		},
+		{
+			"id": 3,
+			"prompt": "We have some inconsistent patterns in our API responses. Run /discover-standards to document them.",
+			"expected_output": "Should run discover-standards workflow, analyzing API code, presenting findings, and creating standard files",
+			"files": []
+		},
+		{
+			"id": 4,
+			"prompt": "I'm working on a new API endpoint, run /inject-standards to get the relevant standards in context",
+			"expected_output": "Should run inject-standards in auto-suggest mode, reading index.yml, analyzing context, and suggesting relevant standards",
+			"files": []
+		}
+	]
+}
