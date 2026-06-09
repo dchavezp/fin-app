@@ -2,19 +2,26 @@ import type React from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { NAV_THEME } from "@/lib/constants";
+import { getFinDataMode } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
 
-export function Container({ children }: { children: React.ReactNode }) {
+export function Container({
+  children,
+  includeBottomInset = true,
+}: {
+  children: React.ReactNode;
+  includeBottomInset?: boolean;
+}) {
   const { colorScheme } = useColorScheme();
-  const backgroundColor =
-    colorScheme === "dark"
-      ? NAV_THEME.dark.background
-      : NAV_THEME.light.background;
+  const backgroundColor = getFinDataMode(colorScheme).background;
 
   return (
     <SafeAreaView
-      edges={["left", "right", "bottom"]}
+      edges={
+        includeBottomInset
+          ? ["top", "left", "right", "bottom"]
+          : ["top", "left", "right"]
+      }
       style={[styles.container, { backgroundColor }]}
     >
       {children}

@@ -50,6 +50,7 @@ function AuthFlow() {
         keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
         keyboardShouldPersistTaps="handled"
         style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.brandBlock}>
           <View style={styles.logoMark}>
@@ -322,9 +323,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    flexGrow: 1,
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxl + sizes.primaryButtonHeight,
     paddingTop: spacing.xxl,
   },
   brandBlock: {

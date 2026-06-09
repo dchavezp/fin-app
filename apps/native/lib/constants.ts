@@ -1,19 +1,19 @@
 export const NAV_THEME = {
   light: {
-    background: "hsl(0 0% 100%)",
-    border: "hsl(220 13% 91%)",
-    card: "hsl(0 0% 100%)",
+    background: "#131313",
+    border: "#222222",
+    card: "#0D0D0D",
     notification: "hsl(0 84.2% 60.2%)",
-    primary: "hsl(221.2 83.2% 53.3%)",
-    text: "hsl(222.2 84% 4.9%)",
+    primary: "#CDF200",
+    text: "#E2E2E2",
   },
   dark: {
-    background: "hsl(222.2 84% 4.9%)",
-    border: "hsl(217.2 32.6% 17.5%)",
-    card: "hsl(222.2 84% 4.9%)",
+    background: "#131313",
+    border: "#222222",
+    card: "#0D0D0D",
     notification: "hsl(0 72% 51%)",
-    primary: "hsl(217.2 91.2% 59.8%)",
-    text: "hsl(210 40% 98%)",
+    primary: "#CDF200",
+    text: "#E2E2E2",
   },
 };
 
@@ -62,4 +62,56 @@ export const FIN_DATA_THEME = {
     label: 11,
     micro: 9,
   },
+  modes: {
+    light: {
+      background: "#131313",
+      surface: "#0D0D0D",
+      surfaceVariant: "#353535",
+      surfaceContainer: "#1B1B1B",
+      surfaceContainerHigh: "#2A2A2A",
+      surfaceContainerLow: "#0E0E0E",
+      primary: "#CDF200",
+      primaryContainer: "#CDF200",
+      onPrimaryContainer: "#181E00",
+      success: "#CDF200",
+      successSurface: "#181E00",
+      error: "#FFB4AB",
+      errorSurface: "#450A0A",
+      text: "#FFFFFF",
+      textSecondary: "#E2E2E2",
+      textTertiary: "#C5C9AC",
+      border: "#222222",
+      cardBorder: "#222222",
+      chartGreen: "#CDF200",
+      chartNavy: "#7000FF",
+    },
+    dark: {
+      background: "#131313",
+      surface: "#0D0D0D",
+      surfaceVariant: "#353535",
+      surfaceContainer: "#1B1B1B",
+      surfaceContainerHigh: "#2A2A2A",
+      surfaceContainerLow: "#0E0E0E",
+      primary: "#CDF200",
+      primaryContainer: "#CDF200",
+      onPrimaryContainer: "#181E00",
+      success: "#CDF200",
+      successSurface: "#181E00",
+      error: "#FFB4AB",
+      errorSurface: "#450A0A",
+      text: "#FFFFFF",
+      textSecondary: "#E2E2E2",
+      textTertiary: "#C5C9AC",
+      border: "#222222",
+      cardBorder: "#222222",
+      chartGreen: "#CDF200",
+      chartNavy: "#7000FF",
+    },
+  },
 } as const;
+
+export function getFinDataMode(colorScheme?: string | null) {
+  return colorScheme === "dark"
+    ? FIN_DATA_THEME.modes.dark
+    : FIN_DATA_THEME.modes.light;
+}

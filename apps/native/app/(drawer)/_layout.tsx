@@ -1,18 +1,87 @@
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { type Href, Link, Redirect } from "expo-router";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import type { DrawerContentComponentProps } from "@react-navigation/drawer";
+import { DrawerContentScrollView } from "@react-navigation/drawer";
+import { type Href, Redirect, useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
-
-import { HeaderButton } from "@/components/header-button";
-import { NAV_THEME } from "@/lib/constants";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { authClient } from "@/lib/auth-client";
+import { FIN_DATA_THEME, getFinDataMode } from "@/lib/constants";
+import { disableMockAuth } from "@/lib/mock-auth";
 import { useColorScheme } from "@/lib/use-color-scheme";
 import { useSession } from "@/lib/use-session";
 
 const AUTH_ROUTE = "/auth" as Href;
 
+type CustomDrawerContentProps = DrawerContentComponentProps & {
+  userEmail?: string | null;
+  userName?: string | null;
+};
+
+function CustomDrawerContent({
+  userEmail,
+  userName,
+  ...props
+}: CustomDrawerContentProps) {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { colorScheme } = useColorScheme();
+  const theme = getFinDataMode(colorScheme);
+
+  async function handleSignOut() {
+    disableMockAuth();
+    await authClient.signOut();
+    router.replace(AUTH_ROUTE);
+  }
+
+  return (
+    <View style={[styles.drawerContainer, { backgroundColor: theme.surface }]}>
+      <DrawerContentScrollView {...props}>
+        <View style={styles.drawerHeader}>
+          <MaterialCommunityIcons
+            name="chart-line"
+            size={28}
+            color={theme.primary}
+          />
+          <View style={styles.accountBlock}>
+            <Text style={[styles.drawerBrand, { color: theme.text }]}>
+              FinData Pro
+            </Text>
+            <Text style={[styles.accountName, { color: theme.text }]}>
+              {userName || "No data"}
+            </Text>
+            <Text style={[styles.accountEmail, { color: theme.textSecondary }]}>
+              {userEmail || "No data"}
+            </Text>
+          </View>
+        </View>
+      </DrawerContentScrollView>
+      <View
+        style={[
+          styles.drawerFooter,
+          { borderTopColor: theme.border, paddingBottom: 16 + insets.bottom },
+        ]}
+      >
+        <Pressable style={styles.signOutRow} onPress={handleSignOut}>
+          <Ionicons name="log-out-outline" size={22} color={theme.error} />
+          <Text style={[styles.signOutLabel, { color: theme.error }]}>
+            Sign Out
+          </Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 const DrawerLayout = () => {
   const { colorScheme } = useColorScheme();
-  const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
+  const theme = getFinDataMode(colorScheme);
   const { data: session, isPending } = useSession();
 
   if (isPending) {
@@ -29,45 +98,39 @@ const DrawerLayout = () => {
 
   return (
     <Drawer
+      drawerContent={(props) => (
+        <CustomDrawerContent
+          {...props}
+          userEmail={session.user.email}
+          userName={session.user.name}
+        />
+      )}
       screenOptions={{
-        headerStyle: {
-          backgroundColor: theme.background,
-        },
-        headerTitleStyle: {
-          color: theme.text,
-        },
-        headerTintColor: theme.text,
+        headerShown: false,
         drawerStyle: {
-          backgroundColor: theme.background,
+          backgroundColor: theme.surface,
+          width: 280,
         },
         drawerLabelStyle: {
-          color: theme.text,
+          color: theme.textSecondary,
         },
-        drawerInactiveTintColor: theme.text,
+        drawerInactiveTintColor: theme.textSecondary,
+        drawerActiveTintColor: theme.primary,
+        drawerActiveBackgroundColor: theme.surfaceVariant,
       }}
     >
       <Drawer.Screen
         name="index"
         options={{
-          headerTitle: "Home",
-          drawerLabel: "Home",
-          drawerIcon: ({ size, color }: { size: number; color: string }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
+          drawerItemStyle: { display: "none" },
         }}
       />
       <Drawer.Screen
         name="(tabs)"
         options={{
-          headerTitle: "Tabs",
-          drawerLabel: "Tabs",
+          drawerItemStyle: { display: "none" },
           drawerIcon: ({ size, color }: { size: number; color: string }) => (
-            <MaterialIcons name="border-bottom" size={size} color={color} />
-          ),
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <HeaderButton />
-            </Link>
+            <Ionicons name="grid-outline" size={size} color={color} />
           ),
         }}
       />
@@ -80,6 +143,49 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     justifyContent: "center",
+  },
+  drawerContainer: {
+    flex: 1,
+  },
+  drawerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  accountBlock: {
+    flex: 1,
+    gap: 4,
+  },
+  drawerBrand: {
+    fontSize: FIN_DATA_THEME.typography.caption,
+    fontWeight: "600",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  },
+  accountName: {
+    fontSize: FIN_DATA_THEME.typography.brand,
+    fontWeight: "700",
+  },
+  accountEmail: {
+    fontSize: FIN_DATA_THEME.typography.body,
+    fontWeight: "400",
+  },
+  drawerFooter: {
+    borderTopWidth: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  signOutRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 8,
+  },
+  signOutLabel: {
+    fontSize: FIN_DATA_THEME.typography.button,
+    fontWeight: "500",
   },
 });
 

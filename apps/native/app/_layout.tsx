@@ -35,7 +35,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
+      <StatusBar style="light" />
       <GestureHandlerRootView style={styles.container}>
         <Stack>
           <Stack.Screen name="auth" options={{ headerShown: false }} />
