@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
+import { enableMockAuth } from "@/lib/mock-auth";
 
 import { authCallbackURL } from "../constants/auth-callback";
 import { signInSchema, signUpSchema } from "../schemas/auth.schema";
@@ -110,6 +111,13 @@ function useAuthFlow() {
 
     setIsGoogleSubmitting(true);
     setError(null);
+
+    if (__DEV__) {
+      enableMockAuth();
+      setIsGoogleSubmitting(false);
+      router.replace("/(drawer)");
+      return;
+    }
 
     try {
       await authClient.signIn.social(

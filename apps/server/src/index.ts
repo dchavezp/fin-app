@@ -1,4 +1,5 @@
 import { auth } from "@finn-app/auth";
+import { checkDatabaseConnection } from "@finn-app/db";
 import { env } from "@finn-app/env/server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -19,11 +20,23 @@ app.use(
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
+app.get("/health", async (c) => {
+  try {
+    await checkDatabaseConnection();
+
+    return c.json({ ok: true, database: "connected" });
+  } catch {
+    return c.json({ ok: false, database: "disconnected" }, 503);
+  }
+});
+
 app.get("/", (c) => {
   return c.text("OK");
 });
 
 import { serve } from "@hono/node-server";
+
+await checkDatabaseConnection();
 
 serve(
   {

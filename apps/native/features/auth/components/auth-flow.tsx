@@ -354,6 +354,18 @@ const styles = StyleSheet.create({
   formBlock: {
     gap: spacing.lg,
   },
+  errorBox: {
+    backgroundColor: colors.errorSurface,
+    borderColor: colors.errorBorder,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    padding: 10,
+  },
+  errorText: {
+    color: colors.error,
+    fontSize: typography.caption,
+    fontWeight: "600",
+  },
   googleButton: {
     alignItems: "center",
     backgroundColor: colors.panel,
@@ -389,18 +401,6 @@ const styles = StyleSheet.create({
     fontSize: typography.micro,
     fontWeight: "700",
     letterSpacing: 0.8,
-  },
-  errorBox: {
-    backgroundColor: colors.errorSurface,
-    borderColor: colors.errorBorder,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    padding: 10,
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: typography.caption,
-    fontWeight: "600",
   },
   fieldGroup: {
     gap: spacing.xs,

@@ -4,7 +4,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Container } from "@/components/container";
 import { authClient } from "@/lib/auth-client";
 import { NAV_THEME } from "@/lib/constants";
+import { disableMockAuth } from "@/lib/mock-auth";
 import { useColorScheme } from "@/lib/use-color-scheme";
+import { useSession } from "@/lib/use-session";
 
 const AUTH_ROUTE = "/auth" as Href;
 
@@ -12,9 +14,10 @@ export default function Home() {
   const router = useRouter();
   const { colorScheme } = useColorScheme();
   const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
-  const { data: session } = authClient.useSession();
+  const { data: session } = useSession();
 
   async function handleSignOut() {
+    disableMockAuth();
     await authClient.signOut();
     router.replace(AUTH_ROUTE);
   }

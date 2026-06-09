@@ -4,16 +4,16 @@ import { Drawer } from "expo-router/drawer";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { HeaderButton } from "@/components/header-button";
-import { authClient } from "@/lib/auth-client";
 import { NAV_THEME } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
+import { useSession } from "@/lib/use-session";
 
 const AUTH_ROUTE = "/auth" as Href;
 
 const DrawerLayout = () => {
   const { colorScheme } = useColorScheme();
   const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, isPending } = useSession();
 
   if (isPending) {
     return (
