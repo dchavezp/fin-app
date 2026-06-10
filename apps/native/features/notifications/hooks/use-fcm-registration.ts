@@ -12,7 +12,9 @@ function isAndroid(): boolean {
 }
 
 async function setupAndroidChannel() {
-  if (!isAndroid()) {
+  const androidVersion = Number(Platform.Version);
+
+  if (!isAndroid() || androidVersion < 26) {
     return;
   }
 

@@ -1,6 +1,7 @@
 import { env } from "@finn-app/env/server";
 import WebSocket from "ws";
 
+import { logger } from "@/lib/logger";
 import { evaluateAlert } from "@/modules/notifications/alert-evaluator";
 
 const FINNHUB_WS_URL = "wss://ws.finnhub.io";
@@ -21,12 +22,19 @@ const subscribedSymbols = new Set<string>();
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 let isConnecting = false;
 let reconnectAttempts = 0;
-const MAX_RECONNECT_DELAY = 30_000;
+const MAX_RECONNECT_DELAY = 120_000;
+const RATE_LIMITED_BASE_DELAY = 60_000;
 
-function getReconnectDelay(): number {
-  const delay = Math.min(1000 * 2 ** reconnectAttempts, MAX_RECONNECT_DELAY);
+let isRateLimited = false;
 
-  return delay;
+function getReconnectDelay(error?: Error): number {
+  if (error?.message.includes("429") || isRateLimited) {
+    isRateLimited = true;
+
+    return RATE_LIMITED_BASE_DELAY;
+  }
+
+  return Math.min(1000 * 2 ** reconnectAttempts, MAX_RECONNECT_DELAY);
 }
 
 function handleMessage(raw: WebSocket.RawData) {
@@ -43,32 +51,46 @@ function handleMessage(raw: WebSocket.RawData) {
         price: trade.p,
         time: trade.t,
       }).catch((error) => {
-        console.error(`Alert evaluation failed for ${trade.s}:`, error);
+        logger.error({ symbol: trade.s, error }, "alert evaluation failed");
       });
     }
   } catch (error) {
-    console.error("Failed to parse Finnhub WebSocket message:", error);
+    logger.error({ error }, "failed to parse Finnhub WebSocket message");
   }
 }
 
-function handleClose() {
+function handleClose(code?: number, reason?: string) {
   ws = null;
-  scheduleReconnect();
+  scheduleReconnect(undefined, code, reason);
 }
 
 function handleError(error: Error) {
-  console.error("Finnhub WebSocket error:", error.message);
+  logger.error({ error: error.message }, "Finnhub WebSocket error");
+
+  if (error.message.includes("429")) {
+    isRateLimited = true;
+  }
 }
 
-function scheduleReconnect() {
+function scheduleReconnect(
+  error?: Error,
+  closeCode?: number,
+  closeReason?: string,
+) {
   if (reconnectTimer) {
     clearTimeout(reconnectTimer);
   }
 
-  const delay = getReconnectDelay();
+  const delay = getReconnectDelay(error);
+
+  logger.info(
+    { delay, reconnectAttempts, closeCode, closeReason, isRateLimited },
+    "scheduling Finnhub WebSocket reconnect",
+  );
 
   reconnectTimer = setTimeout(() => {
     reconnectAttempts += 1;
+    isRateLimited = false;
     connect();
   }, delay);
 }
@@ -98,11 +120,11 @@ function connect() {
     ws.on("close", handleClose);
     ws.on("error", (error: Error) => {
       handleError(error);
-      handleClose();
+      handleClose(undefined, error.message);
     });
   } catch (error) {
     isConnecting = false;
-    console.error("Failed to create Finnhub WebSocket:", error);
+    logger.error({ error }, "failed to create Finnhub WebSocket");
     scheduleReconnect();
   }
 }

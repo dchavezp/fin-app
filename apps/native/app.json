@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "finn-app",
-    "slug": "finn-app",
+    "slug": "fin-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -29,6 +29,7 @@
       "package": "com.finnapp.app",
       "versionCode": 1,
       "googleServicesFile": "./google-services.json",
+      "usesCleartextTraffic": true,
       "useNextNotificationsApi": true
     },
     "web": {
@@ -37,11 +38,10 @@
     },
     "plugins": [
       "expo-router",
-      "expo-dev-client",
       [
         "expo-notifications",
         {
-          "icon": "./assets/favicon.png",
+          "icon": "./assets/images/notification.png",
           "color": "#ffffff",
           "defaultChannel": "default"
         }
@@ -61,12 +61,13 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "6ea1631a-33c6-4a5b-b0cc-5abe0fba8f36"
+        "projectId": "97b4583d-a38b-4f04-a07e-22be9549025f"
       }
     },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "owner": "dchavezp"
   }
 }

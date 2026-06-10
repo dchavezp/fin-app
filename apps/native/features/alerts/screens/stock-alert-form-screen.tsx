@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -32,6 +32,9 @@ export function StockAlertFormScreen({
   mode,
 }: StockAlertFormScreenProps) {
   const router = useRouter();
+  const { selectedSymbol } = useLocalSearchParams<{
+    selectedSymbol?: string;
+  }>();
   const { createAlert, deleteAlert, getAlert, updateAlert } = useStockAlerts();
   const { colorScheme } = useColorScheme();
   const theme = getFinDataMode(colorScheme);
@@ -59,6 +62,12 @@ export function StockAlertFormScreen({
     setLabel(existingAlert.label ?? "");
   }, [existingAlert]);
 
+  useEffect(() => {
+    if (selectedSymbol && typeof selectedSymbol === "string") {
+      setSymbol(selectedSymbol.toUpperCase());
+    }
+  }, [selectedSymbol]);
+
   function validate() {
     const normalizedSymbol = symbol.trim().toUpperCase();
     const normalizedTargetPrice = targetPrice.trim();
@@ -77,6 +86,14 @@ export function StockAlertFormScreen({
     }
 
     return null;
+  }
+
+  function handlePickStock() {
+    if (mode === "edit" && alertId) {
+      router.push(`/alerts/stock-picker?returnTo=${alertId}`);
+    } else {
+      router.push("/alerts/stock-picker");
+    }
   }
 
   async function handleSave() {
@@ -234,21 +251,34 @@ export function StockAlertFormScreen({
 
             <View style={styles.fieldGroup}>
               <Text style={[styles.label, { color: theme.text }]}>Symbol</Text>
-              <TextInput
-                autoCapitalize="characters"
-                autoCorrect={false}
-                placeholder="AAPL"
-                placeholderTextColor={theme.textTertiary}
-                onChangeText={(value) => {
-                  setError(null);
-                  setSymbol(value.toUpperCase());
-                }}
-                style={[
-                  styles.input,
-                  { borderColor: theme.border, color: theme.text },
+              <Pressable
+                onPress={handlePickStock}
+                style={({ pressed }) => [
+                  styles.stockPickerButton,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                    opacity: pressed ? 0.85 : 1,
+                  },
                 ]}
-                value={symbol}
-              />
+              >
+                <Text
+                  style={[
+                    styles.stockPickerText,
+                    {
+                      color: symbol ? theme.text : theme.textTertiary,
+                    },
+                  ]}
+                  numberOfLines={1}
+                >
+                  {symbol || "Choose a stock"}
+                </Text>
+                <Ionicons
+                  name="search-outline"
+                  size={18}
+                  color={theme.textTertiary}
+                />
+              </Pressable>
             </View>
 
             <View style={styles.fieldGroup}>
@@ -446,6 +476,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingHorizontal: 14,
     paddingVertical: 12,
+  },
+  stockPickerButton: {
+    alignItems: "center",
+    borderRadius: 14,
+    borderWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  stockPickerText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "600",
   },
   segmentRow: {
     flexDirection: "row",

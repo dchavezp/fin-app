@@ -6,6 +6,7 @@ export default function AlertsLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="new" />
       <Stack.Screen name="[alertId]" />
+      <Stack.Screen name="stock-picker" />
     </Stack>
   );
 }

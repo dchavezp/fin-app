@@ -5,7 +5,9 @@ import { serve } from "@hono/node-server";
 import { isNull } from "drizzle-orm";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { logger } from "hono/logger";
+import { logger as honoLogger } from "hono/logger";
+
+import { logger } from "@/lib/logger";
 
 import { alertsRoutes } from "@/modules/alerts/alerts.routes";
 import { notificationsRoutes } from "@/modules/notifications/notifications.routes";
@@ -17,7 +19,7 @@ import { stocksRoutes } from "@/modules/stocks/stocks.routes";
 
 const app = new Hono();
 
-app.use(logger());
+app.use(honoLogger());
 app.use(
   "/*",
   cors({
@@ -57,7 +59,7 @@ serve(
     port: 3000,
   },
   (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`);
+    logger.info({ port: info.port }, "server started");
 
     startWebSocket();
     refreshWebSocketSubscriptions();
@@ -76,6 +78,6 @@ async function refreshWebSocketSubscriptions() {
 
     setSubscribedSymbols(symbols);
   } catch (error) {
-    console.error("Failed to refresh WebSocket subscriptions:", error);
+    logger.error({ error }, "failed to refresh WebSocket subscriptions");
   }
 }

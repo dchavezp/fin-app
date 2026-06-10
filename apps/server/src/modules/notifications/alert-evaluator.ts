@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import * as alertsService from "@/modules/alerts/alerts.service";
 import * as notificationsService from "@/modules/notifications/notifications.service";
 
@@ -33,8 +34,18 @@ export async function evaluateAlert(trade: TradeData) {
     return;
   }
 
+  logger.debug(
+    { symbol: trade.symbol, price: trade.price, alertCount: alerts.length },
+    "evaluating alerts for trade",
+  );
+
   for (const alert of alerts) {
     if (isWithinDedupWindow(alert.id)) {
+      logger.debug(
+        { alertId: alert.id, symbol: alert.symbol },
+        "alert skipped — within dedup window",
+      );
+
       continue;
     }
 
@@ -47,6 +58,18 @@ export async function evaluateAlert(trade: TradeData) {
       continue;
     }
 
+    logger.info(
+      {
+        alertId: alert.id,
+        symbol: alert.symbol,
+        targetPrice: alert.targetPrice,
+        triggerPrice: trade.price,
+        direction: alert.direction,
+        userId: alert.userId,
+      },
+      "price alert triggered",
+    );
+
     await alertsService.markAlertTriggered(alert.id);
     markTriggered(alert.id);
 
@@ -55,6 +78,11 @@ export async function evaluateAlert(trade: TradeData) {
     );
 
     if (tokens.length === 0) {
+      logger.warn(
+        { alertId: alert.id, userId: alert.userId },
+        "alert triggered but no device tokens — notification not sent",
+      );
+
       continue;
     }
 
@@ -62,6 +90,15 @@ export async function evaluateAlert(trade: TradeData) {
     const directionLabel = alert.direction === "above" ? "above" : "below";
     const title = `Price Alert: ${alert.symbol}`;
     const body = `${alert.symbol} traded at $${trade.price.toFixed(2)} — ${directionLabel} your target of $${alert.targetPrice}.`;
+
+    logger.info(
+      {
+        alertId: alert.id,
+        symbol: alert.symbol,
+        tokenCount: tokens.length,
+      },
+      "sending push notification for triggered alert",
+    );
 
     sendPushNotificationToMultipleTokens(tokenValues, title, body, {
       symbol: alert.symbol,
@@ -71,7 +108,10 @@ export async function evaluateAlert(trade: TradeData) {
       direction: alert.direction,
       type: "price_alert",
     }).catch((error) => {
-      console.error(`FCM send failed for alert ${alert.id}:`, error);
+      logger.error(
+        { alertId: alert.id, error },
+        "FCM push notification send failed",
+      );
     });
   }
 }
