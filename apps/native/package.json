@@ -17,6 +17,7 @@
     "@finn-app/env": "workspace:*",
     "@react-navigation/drawer": "^7.11.0",
     "@react-navigation/native": "^7.0.0",
+    "@shopify/flash-list": "^2.3.1",
     "@tanstack/react-form": "^1.28.0",
     "@tanstack/react-query": "^5.99.2",
     "better-auth": "catalog:",

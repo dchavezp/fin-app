@@ -5,7 +5,6 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Container } from "@/components/container";
 import { StockAlertsPreviewSection } from "@/features/alerts/components/stock-alerts-preview-section";
-import { NotificationHistoryPreviewSection } from "@/features/notifications/components/notification-history-preview-section";
 import { getFinDataMode } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
 
@@ -50,7 +49,6 @@ export function HomeScreen() {
       >
         <MarketOverviewCard />
         <StockAlertsPreviewSection />
-        <NotificationHistoryPreviewSection />
         <WatchlistSection />
       </ScrollView>
     </Container>

@@ -2,7 +2,7 @@
 
 ## Lists: FlashList over FlatList
 - `FlatList` keeps all items in memory — use `@shopify/flash-list` for any scrollable list
-- Always set `estimatedItemSize` to prevent layout shifts
+- FlashList v2 handles item sizing internally; do not add v1-only sizing props that fail TypeScript
 
 ```tsx
 import { FlashList } from "@shopify/flash-list";
@@ -10,7 +10,6 @@ import { FlashList } from "@shopify/flash-list";
 <FlashList
   data={items}
   renderItem={renderRow}
-  estimatedItemSize={64}
   keyExtractor={(item) => item.id}
 />
 ```
@@ -22,4 +21,4 @@ import { FlashList } from "@shopify/flash-list";
 ## Rules
 - Every scrollable list uses FlashList
 - Every remote image uses `expo-image`
-- Set `estimatedItemSize` explicitly on all FlashList instances
+- Keep FlashList props aligned with the installed major version
