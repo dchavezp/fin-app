@@ -24,6 +24,8 @@
       "!**/.nuxt",
       "!bts.jsonc",
       "!**/.expo",
+      "!apps/native/android",
+      "!apps/native/ios",
       "!**/.wrangler",
       "!**/.alchemy",
       "!**/.svelte-kit",
