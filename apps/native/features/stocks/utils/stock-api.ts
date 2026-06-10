@@ -8,6 +8,7 @@ import type {
   StockDetailResponse,
   StockFilter,
   StockHistoryResponse,
+  StockListItem,
   StockListResponse,
 } from "../types";
 
@@ -46,6 +47,40 @@ async function fetchJson<T>(path: string, signal?: AbortSignal) {
   return payload.data;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function isStockListItem(value: unknown): value is StockListItem {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.symbol === "string" &&
+    typeof value.name === "string" &&
+    typeof value.exchange === "string" &&
+    isFiniteNumber(value.price) &&
+    isFiniteNumber(value.change) &&
+    isFiniteNumber(value.changePercent) &&
+    (value.marketCap === null || isFiniteNumber(value.marketCap)) &&
+    (value.currency === null || typeof value.currency === "string") &&
+    typeof value.initials === "string"
+  );
+}
+
+function parseStockListItems(value: unknown) {
+  if (!Array.isArray(value) || !value.every(isStockListItem)) {
+    throw new StockApiError("Unable to load stock data");
+  }
+
+  return value;
+}
+
 export function fetchStocks(
   filter: StockFilter,
   query: string,
@@ -67,6 +102,12 @@ export function fetchStocks(
   return fetchJson<StockListResponse["data"]>(
     `/api/stocks?${params.toString()}`,
     signal,
+  );
+}
+
+export function fetchWatchlist(signal?: AbortSignal) {
+  return fetchJson<unknown>("/api/stocks/watchlist", signal).then(
+    parseStockListItems,
   );
 }
 

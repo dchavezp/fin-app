@@ -12,6 +12,7 @@ import {
   getStockEarnings,
   getStockHistory,
   getStockList,
+  getStockWatchlist,
   searchStocks,
   toApiError,
 } from "./stocks.service";
@@ -39,6 +40,18 @@ export const stocksRoutes = new Hono()
       const stocks = await getStockList(parsed.data.filter, parsed.data.limit);
 
       return c.json({ data: stocks });
+    } catch (error) {
+      const apiError = toApiError(error);
+      c.status(apiError.status as 400 | 404 | 500 | 502);
+
+      return c.json({ error: apiError.message });
+    }
+  })
+  .get("/watchlist", async (c) => {
+    try {
+      const watchlist = await getStockWatchlist();
+
+      return c.json({ data: watchlist });
     } catch (error) {
       const apiError = toApiError(error);
       c.status(apiError.status as 400 | 404 | 500 | 502);

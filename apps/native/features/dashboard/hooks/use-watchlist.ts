@@ -1,14 +1,16 @@
-import { useCallback, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-import { MOCK_WATCHLIST, type WatchlistItem } from "../constants";
+import { fetchWatchlist } from "@/features/stocks/utils/stock-api";
 
 export function useWatchlist() {
-  const [data] = useState<WatchlistItem[]>(MOCK_WATCHLIST);
-  const [isPending] = useState(false);
+  const query = useQuery({
+    queryKey: ["dashboard", "watchlist"],
+    queryFn: ({ signal }) => fetchWatchlist(signal),
+    staleTime: 1000 * 30,
+  });
 
-  const refetch = useCallback(async () => {
-    /* TODO: fetch from Finnhub API */
-  }, []);
-
-  return { data, isPending, refetch };
+  return {
+    ...query,
+    data: query.data ?? [],
+  };
 }

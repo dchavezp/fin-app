@@ -34,6 +34,7 @@ const POPULAR_SYMBOLS = [
   "INTC",
   "JPM",
 ];
+const WATCHLIST_SYMBOLS = ["AAPL", "TSLA", "NVDA", "GOOGL", "META"];
 
 interface FinnhubSearchResult {
   description: string;
@@ -405,6 +406,19 @@ export async function getStockList(filter: StockFilter, limit: number) {
   }
 
   return applyFilter(items, filter, limit);
+}
+
+export async function getStockWatchlist() {
+  const settledItems = await Promise.allSettled(
+    WATCHLIST_SYMBOLS.map((symbol) => loadSummaryForSymbol(symbol, null)),
+  );
+  const items = settledItems.filter(isFulfilled).map((result) => result.value);
+
+  if (items.length === 0) {
+    throw new FinnhubError("Unable to load watchlist data");
+  }
+
+  return items;
 }
 
 export async function searchStocks(
