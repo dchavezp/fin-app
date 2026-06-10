@@ -22,10 +22,10 @@ export const StockAlertsPreviewSection = memo(
         <View style={styles.header}>
           <View style={styles.headerCopy}>
             <Text style={[styles.title, { color: theme.text }]}>
-              Stock alerts
+              Price rules
             </Text>
             <Text style={[styles.subtitle, { color: theme.textTertiary }]}>
-              Track up to four alerts from the home screen.
+              Track up to four rules from the home screen.
             </Text>
           </View>
           <Pressable
@@ -40,10 +40,10 @@ export const StockAlertsPreviewSection = memo(
 
         {previewAlerts.length === 0 ? (
           <StockAlertEmptyState
-            actionLabel="Create alert"
-            description="Add your first stock alert so it appears here and in the alerts hub."
+            actionLabel="Create rule"
+            description="Add your first price rule so it appears here and can trigger notifications."
             onAction={() => router.push("/alerts/new")}
-            title="No alerts yet"
+            title="No rules yet"
           />
         ) : (
           <View style={styles.grid}>

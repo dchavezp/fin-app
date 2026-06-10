@@ -1,7 +1,8 @@
 import { DrawerToggleButton } from "@react-navigation/drawer";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Container } from "@/components/container";
+import { NotificationSettingsCard } from "@/features/notifications/components/notification-settings-card";
 import { FIN_DATA_THEME, getFinDataMode } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
 import { useSession } from "@/lib/use-session";
@@ -20,32 +21,40 @@ export function ProfileScreen() {
           <View style={styles.headerSpacer} />
         </View>
 
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.cardBorder },
-          ]}
+        <ScrollView
+          contentContainerStyle={styles.content}
+          contentInsetAdjustmentBehavior="automatic"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={[styles.label, { color: theme.textTertiary }]}>
-            Name
-          </Text>
-          <Text style={[styles.value, { color: theme.text }]}>
-            {session?.user.name || "No data"}
-          </Text>
-
-          <Text
+          <View
             style={[
-              styles.label,
-              styles.sectionGap,
-              { color: theme.textTertiary },
+              styles.card,
+              { backgroundColor: theme.surface, borderColor: theme.cardBorder },
             ]}
           >
-            Email
-          </Text>
-          <Text style={[styles.value, { color: theme.text }]}>
-            {session?.user.email || "No data"}
-          </Text>
-        </View>
+            <Text style={[styles.label, { color: theme.textTertiary }]}>
+              Name
+            </Text>
+            <Text style={[styles.value, { color: theme.text }]}>
+              {session?.user.name || "No data"}
+            </Text>
+
+            <Text
+              style={[
+                styles.label,
+                styles.sectionGap,
+                { color: theme.textTertiary },
+              ]}
+            >
+              Email
+            </Text>
+            <Text style={[styles.value, { color: theme.text }]}>
+              {session?.user.email || "No data"}
+            </Text>
+          </View>
+
+          <NotificationSettingsCard />
+        </ScrollView>
       </View>
     </Container>
   );
@@ -67,6 +76,9 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 40,
   },
+  content: {
+    paddingBottom: 120,
+  },
   title: {
     fontSize: 28,
     fontWeight: "700",
@@ -74,6 +86,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 16,
     borderWidth: 1,
+    marginBottom: 16,
     padding: 20,
   },
   label: {

@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StockAlertsProvider } from "@/features/alerts/stock-alerts-context";
+import { NotificationHistoryProvider } from "@/features/notifications/notification-history-context";
 import { authClient } from "@/lib/auth-client";
 import { FIN_DATA_THEME, getFinDataMode } from "@/lib/constants";
 import { disableMockAuth } from "@/lib/mock-auth";
@@ -99,51 +100,60 @@ const DrawerLayout = () => {
 
   return (
     <StockAlertsProvider>
-      <Drawer
-        drawerContent={(props) => (
-          <CustomDrawerContent
-            {...props}
-            userEmail={session.user.email}
-            userName={session.user.name}
-          />
-        )}
-        screenOptions={{
-          headerShown: false,
-          drawerStyle: {
-            backgroundColor: theme.surface,
-            width: 280,
-          },
-          drawerLabelStyle: {
-            color: theme.textSecondary,
-          },
-          drawerInactiveTintColor: theme.textSecondary,
-          drawerActiveTintColor: theme.primary,
-          drawerActiveBackgroundColor: theme.surfaceVariant,
-        }}
+      <NotificationHistoryProvider
+        key={session.user.id}
+        userId={session.user.id}
       >
-        <Drawer.Screen
-          name="index"
-          options={{
-            drawerItemStyle: { display: "none" },
-          }}
-        />
-        <Drawer.Screen
-          name="(tabs)"
-          options={{
-            drawerItemStyle: { display: "none" },
-            drawerIcon: ({ size, color }: { size: number; color: string }) => (
-              <Ionicons name="grid-outline" size={size} color={color} />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="stocks"
-          options={{
-            drawerItemStyle: { display: "none" },
+        <Drawer
+          drawerContent={(props) => (
+            <CustomDrawerContent
+              {...props}
+              userEmail={session.user.email}
+              userName={session.user.name}
+            />
+          )}
+          screenOptions={{
             headerShown: false,
+            drawerStyle: {
+              backgroundColor: theme.surface,
+              width: 280,
+            },
+            drawerLabelStyle: {
+              color: theme.textSecondary,
+            },
+            drawerInactiveTintColor: theme.textSecondary,
+            drawerActiveTintColor: theme.primary,
+            drawerActiveBackgroundColor: theme.surfaceVariant,
           }}
-        />
-      </Drawer>
+        >
+          <Drawer.Screen
+            name="index"
+            options={{
+              drawerItemStyle: { display: "none" },
+            }}
+          />
+          <Drawer.Screen
+            name="(tabs)"
+            options={{
+              drawerItemStyle: { display: "none" },
+              drawerIcon: ({
+                size,
+                color,
+              }: {
+                size: number;
+                color: string;
+              }) => <Ionicons name="grid-outline" size={size} color={color} />,
+            }}
+          />
+          <Drawer.Screen
+            name="stocks"
+            options={{
+              drawerItemStyle: { display: "none" },
+              headerShown: false,
+            }}
+          />
+        </Drawer>
+      </NotificationHistoryProvider>
     </StockAlertsProvider>
   );
 };

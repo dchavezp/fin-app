@@ -20,9 +20,7 @@ export function AlertsScreen() {
       <View style={[styles.screen, { backgroundColor: theme.background }]}>
         <View style={[styles.header, { borderBottomColor: theme.border }]}>
           <DrawerToggleButton tintColor={theme.primary} />
-          <Text style={[styles.title, { color: theme.primary }]}>
-            Stock Alerts
-          </Text>
+          <Text style={[styles.title, { color: theme.primary }]}>Rules</Text>
           <Pressable
             accessibilityRole="button"
             onPress={() => router.push("/alerts/new")}
@@ -38,19 +36,20 @@ export function AlertsScreen() {
         >
           <View style={styles.summary}>
             <Text style={[styles.summaryTitle, { color: theme.text }]}>
-              Manage alerts
+              Manage price rules
             </Text>
             <Text style={[styles.summaryBody, { color: theme.textTertiary }]}>
-              Create, edit, or remove stock alerts from this screen.
+              Create, edit, or remove price rules that can trigger
+              notifications.
             </Text>
           </View>
 
           {alerts.length === 0 ? (
             <StockAlertEmptyState
-              actionLabel="Create alert"
-              description="Set up your first stock alert so it shows up on Home and here."
+              actionLabel="Create rule"
+              description="Set up your first price rule so it can appear on Home and trigger notifications."
               onAction={() => router.push("/alerts/new")}
-              title="No stock alerts yet"
+              title="No price rules yet"
             />
           ) : (
             <View style={styles.list}>

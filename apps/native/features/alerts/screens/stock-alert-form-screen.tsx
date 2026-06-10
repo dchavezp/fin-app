@@ -110,8 +110,8 @@ export function StockAlertFormScreen({
     }
 
     Alert.alert(
-      "Delete alert?",
-      `Remove ${existingAlert?.symbol ?? "this alert"}?`,
+      "Delete rule?",
+      `Remove ${existingAlert?.symbol ?? "this rule"}?`,
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -157,10 +157,10 @@ export function StockAlertFormScreen({
             ]}
           >
             <Text style={[styles.cardTitle, { color: theme.text }]}>
-              This alert no longer exists.
+              This rule no longer exists.
             </Text>
             <Text style={[styles.cardBody, { color: theme.textTertiary }]}>
-              Go back to the alerts list and create a new one.
+              Go back to the rules list and create a new one.
             </Text>
             <Pressable
               onPress={() => router.replace("/alerts")}
@@ -172,7 +172,7 @@ export function StockAlertFormScreen({
               <Text
                 style={[styles.primaryButtonText, { color: theme.surface }]}
               >
-                Back to alerts
+                Back to rules
               </Text>
             </Pressable>
           </View>
@@ -213,17 +213,17 @@ export function StockAlertFormScreen({
               <Ionicons name="arrow-back" size={22} color={theme.primary} />
             </Pressable>
             <Text style={[styles.headerTitle, { color: theme.text }]}>
-              {mode === "edit" ? "Edit alert" : "New alert"}
+              {mode === "edit" ? "Edit rule" : "New rule"}
             </Text>
             <View style={styles.headerAction} />
           </View>
 
           <View style={styles.formBody}>
             <Text style={[styles.cardTitle, { color: theme.text }]}>
-              Alert details
+              Rule details
             </Text>
             <Text style={[styles.cardBody, { color: theme.textTertiary }]}>
-              Save a symbol, target price, and direction for the alert.
+              Save a symbol, target price, and direction for this rule.
             </Text>
 
             {error ? (
@@ -355,7 +355,7 @@ export function StockAlertFormScreen({
               <Text
                 style={[styles.primaryButtonText, { color: theme.surface }]}
               >
-                {mode === "edit" ? "Save changes" : "Create alert"}
+                {mode === "edit" ? "Save changes" : "Create rule"}
               </Text>
             </Pressable>
 
@@ -368,7 +368,7 @@ export function StockAlertFormScreen({
                 ]}
               >
                 <Text style={[styles.dangerButtonText, { color: theme.error }]}>
-                  Delete alert
+                  Delete rule
                 </Text>
               </Pressable>
             ) : null}
