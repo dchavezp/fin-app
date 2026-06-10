@@ -107,6 +107,9 @@ export function StockDetailScreen({ symbol }: { symbol: string }) {
                 <Text style={[styles.name, { color: theme.textSecondary }]}>
                   {data.name}
                 </Text>
+                <Text style={[styles.exchange, { color: theme.textTertiary }]}>
+                  {data.exchange}
+                </Text>
               </View>
               <View style={styles.priceRowRight}>
                 <Text style={[styles.price, { color: theme.text }]}>
@@ -149,7 +152,27 @@ export function StockDetailScreen({ symbol }: { symbol: string }) {
               website={data.website}
             />
 
-            <View style={styles.statGrid}>
+            <View
+              style={[
+                styles.statsSection,
+                {
+                  backgroundColor: theme.surface,
+                  borderColor: theme.cardBorder,
+                },
+              ]}
+            >
+              <Text style={[styles.statsTitle, { color: theme.text }]}>
+                Trading overview
+              </Text>
+              <Text
+                style={[
+                  styles.statsDescription,
+                  { color: theme.textSecondary },
+                ]}
+              >
+                Key price points and company fundamentals for the latest
+                session.
+              </Text>
               {[
                 ["Open", formatCurrency(data.open, data.currency)],
                 ["High", formatCurrency(data.high, data.currency)],
@@ -159,20 +182,10 @@ export function StockDetailScreen({ symbol }: { symbol: string }) {
                   formatCurrency(data.previousClose, data.currency),
                 ],
                 ["Market Cap", formatMarketCap(data.marketCap)],
-                ["Exchange", data.exchange],
                 ["Industry", data.industry || "N/A"],
                 ["IPO", data.ipo || "N/A"],
               ].map(([label, value]) => (
-                <View
-                  key={label}
-                  style={[
-                    styles.statCard,
-                    {
-                      backgroundColor: theme.surface,
-                      borderColor: theme.cardBorder,
-                    },
-                  ]}
-                >
+                <View key={label} style={styles.statRow}>
                   <Text
                     style={[styles.statLabel, { color: theme.textTertiary }]}
                   >
@@ -238,6 +251,12 @@ const styles = StyleSheet.create({
     fontSize: FIN_DATA_THEME.typography.body,
     marginTop: 4,
   },
+  exchange: {
+    fontSize: FIN_DATA_THEME.typography.caption,
+    fontWeight: "700",
+    marginTop: 6,
+    textTransform: "uppercase",
+  },
   price: {
     fontSize: 28,
     fontWeight: "800",
@@ -247,27 +266,37 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginTop: 6,
   },
-  statGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  statCard: {
+  statsSection: {
     borderRadius: 16,
     borderWidth: 1,
-    flexGrow: 1,
-    flexBasis: 0,
-    minWidth: 160,
     padding: 16,
+  },
+  statsTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  statsDescription: {
+    fontSize: FIN_DATA_THEME.typography.caption,
+    lineHeight: 18,
+    marginTop: 6,
+    marginBottom: 12,
+  },
+  statRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 10,
   },
   statLabel: {
     fontSize: FIN_DATA_THEME.typography.caption,
     fontWeight: "600",
-    marginBottom: 8,
     textTransform: "uppercase",
   },
   statValue: {
     fontSize: FIN_DATA_THEME.typography.body,
     fontWeight: "700",
+    textAlign: "right",
+    marginLeft: 16,
+    flexShrink: 1,
   },
 });
