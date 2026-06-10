@@ -1,29 +1,31 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useMemo,
-  useState,
 } from "react";
-
+import {
+  useAlertsQuery,
+  useCreateAlertMutation,
+  useDeleteAlertMutation,
+  useUpdateAlertMutation,
+} from "./hooks/use-alerts-query";
 import type { StockAlert, StockAlertInput } from "./types";
 
 type StockAlertsContextValue = {
   alerts: StockAlert[];
-  createAlert: (input: StockAlertInput) => StockAlert;
-  deleteAlert: (alertId: string) => void;
+  isLoading: boolean;
+  createAlert: (input: StockAlertInput) => Promise<StockAlert | null>;
+  deleteAlert: (alertId: string) => Promise<void>;
   getAlert: (alertId: string) => StockAlert | undefined;
   updateAlert: (
     alertId: string,
     input: StockAlertInput,
-  ) => StockAlert | undefined;
+  ) => Promise<StockAlert | null>;
 };
 
 const StockAlertsContext = createContext<StockAlertsContextValue | null>(null);
-
-function createAlertId() {
-  return `alert_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-}
 
 function normalizeInput(input: StockAlertInput): StockAlertInput {
   return {
@@ -35,53 +37,74 @@ function normalizeInput(input: StockAlertInput): StockAlertInput {
 }
 
 export function StockAlertsProvider({ children }: { children: ReactNode }) {
-  const [alerts, setAlerts] = useState<StockAlert[]>([]);
+  const { data, isLoading } = useAlertsQuery();
+  const alerts = data ?? [];
+  const createMutation = useCreateAlertMutation();
+  const updateMutation = useUpdateAlertMutation();
+  const deleteMutation = useDeleteAlertMutation();
+
+  const getAlert = useCallback(
+    (alertId: string) => alerts.find((alert) => alert.id === alertId),
+    [alerts],
+  );
+
+  const createAlert = useCallback(
+    async (input: StockAlertInput): Promise<StockAlert | null> => {
+      const normalizedInput = normalizeInput(input);
+
+      try {
+        const result = await createMutation.mutateAsync(normalizedInput);
+
+        return result;
+      } catch {
+        return null;
+      }
+    },
+    [createMutation],
+  );
+
+  const updateAlert = useCallback(
+    async (
+      alertId: string,
+      input: StockAlertInput,
+    ): Promise<StockAlert | null> => {
+      const normalizedInput = normalizeInput(input);
+
+      try {
+        const result = await updateMutation.mutateAsync({
+          alertId,
+          input: normalizedInput,
+        });
+
+        return result;
+      } catch {
+        return null;
+      }
+    },
+    [updateMutation],
+  );
+
+  const deleteAlert = useCallback(
+    async (alertId: string) => {
+      try {
+        await deleteMutation.mutateAsync(alertId);
+      } catch {
+        // Silently fail
+      }
+    },
+    [deleteMutation],
+  );
 
   const value = useMemo<StockAlertsContextValue>(
     () => ({
       alerts,
-      createAlert: (input) => {
-        const now = new Date().toISOString();
-        const normalizedInput = normalizeInput(input);
-        const nextAlert: StockAlert = {
-          id: createAlertId(),
-          createdAt: now,
-          updatedAt: now,
-          ...normalizedInput,
-        };
-
-        setAlerts((current) => [nextAlert, ...current]);
-
-        return nextAlert;
-      },
-      deleteAlert: (alertId) => {
-        setAlerts((current) => current.filter((alert) => alert.id !== alertId));
-      },
-      getAlert: (alertId) => alerts.find((alert) => alert.id === alertId),
-      updateAlert: (alertId, input) => {
-        const normalizedInput = normalizeInput(input);
-        let updatedAlert: StockAlert | undefined;
-
-        setAlerts((current) =>
-          current.map((alert) => {
-            if (alert.id !== alertId) {
-              return alert;
-            }
-
-            updatedAlert = {
-              ...alert,
-              ...normalizedInput,
-              updatedAt: new Date().toISOString(),
-            };
-
-            return updatedAlert;
-          }),
-        );
-
-        return updatedAlert;
-      },
+      isLoading,
+      createAlert,
+      deleteAlert,
+      getAlert,
+      updateAlert,
     }),
-    [alerts],
+    [alerts, isLoading, createAlert, deleteAlert, getAlert, updateAlert],
   );
 
   return (

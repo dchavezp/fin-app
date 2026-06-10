@@ -13,3 +13,8 @@ export const db = createDb();
 export async function checkDatabaseConnection() {
   await db.execute(sql`select 1`);
 }
+
+export { schema };
+
+export const { priceAlert, priceAlertRelations } = schema;
+export const { deviceToken, deviceTokenRelations } = schema;

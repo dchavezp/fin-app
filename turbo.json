@@ -30,6 +30,14 @@
     "db:studio": {
       "cache": false,
       "persistent": true
+    },
+    "build:android": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "build:android:dev": {
+      "cache": false,
+      "dependsOn": ["^build"]
     }
   }
 }

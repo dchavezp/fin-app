@@ -12,6 +12,8 @@
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",
     "dev:server": "turbo -F server dev",
+    "build:android": "turbo -F native build:android",
+    "build:android:dev": "turbo -F native build:android:dev",
     "db:push": "turbo -F @finn-app/db db:push",
     "db:studio": "turbo -F @finn-app/db db:studio",
     "db:generate": "turbo -F @finn-app/db db:generate",

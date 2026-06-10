@@ -8,7 +8,15 @@
     "scheme": "finn-app",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.finnapp.app",
+      "buildNumber": "1.0.0",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"],
+        "UIAccesibilityEnabled": true,
+        "UIAccesibilityAutoFocusEnabled": true
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +26,10 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.mybettertapp"
+      "package": "com.finnapp.app",
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
     },
     "web": {
       "output": "static",
@@ -26,6 +37,15 @@
     },
     "plugins": [
       "expo-router",
+      "expo-dev-client",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/favicon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default"
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -39,6 +59,11 @@
         }
       ]
     ],
+    "extra": {
+      "eas": {
+        "projectId": "6ea1631a-33c6-4a5b-b0cc-5abe0fba8f36"
+      }
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

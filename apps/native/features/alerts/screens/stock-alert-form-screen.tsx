@@ -79,7 +79,7 @@ export function StockAlertFormScreen({
     return null;
   }
 
-  function handleSave() {
+  async function handleSave() {
     const validationError = validate();
 
     if (validationError) {
@@ -95,12 +95,12 @@ export function StockAlertFormScreen({
     };
 
     if (mode === "edit" && alertId) {
-      updateAlert(alertId, payload);
+      await updateAlert(alertId, payload);
       router.replace("/alerts");
       return;
     }
 
-    createAlert(payload);
+    await createAlert(payload);
     router.replace("/alerts");
   }
 
@@ -117,8 +117,8 @@ export function StockAlertFormScreen({
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
-            deleteAlert(alertId);
+          onPress: async () => {
+            await deleteAlert(alertId);
             router.replace("/alerts");
           },
         },

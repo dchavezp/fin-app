@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StockAlertsProvider } from "@/features/alerts/stock-alerts-context";
+import { useFcmRegistration } from "@/features/notifications/hooks/use-fcm-registration";
+import { useNotificationHandler } from "@/features/notifications/hooks/use-notification-handler";
 import { NotificationHistoryProvider } from "@/features/notifications/notification-history-context";
 import { authClient } from "@/lib/auth-client";
 import { FIN_DATA_THEME, getFinDataMode } from "@/lib/constants";
@@ -81,6 +83,13 @@ function CustomDrawerContent({
   );
 }
 
+function NotificationWiring() {
+  useFcmRegistration();
+  useNotificationHandler();
+
+  return null;
+}
+
 const DrawerLayout = () => {
   const { colorScheme } = useColorScheme();
   const theme = getFinDataMode(colorScheme);
@@ -104,6 +113,7 @@ const DrawerLayout = () => {
         key={session.user.id}
         userId={session.user.id}
       >
+        <NotificationWiring />
         <Drawer
           drawerContent={(props) => (
             <CustomDrawerContent
