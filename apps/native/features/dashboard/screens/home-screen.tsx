@@ -4,10 +4,9 @@ import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Container } from "@/components/container";
+import { StockAlertsPreviewSection } from "@/features/alerts/components/stock-alerts-preview-section";
 import { getFinDataMode } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
-
-import { CategoryCards } from "../components/category-cards";
 import { ChartSection } from "../components/chart-section";
 import { MarketOverviewCard } from "../components/market-overview-card";
 import { ReportButton } from "../components/report-button";
@@ -50,7 +49,7 @@ export function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <MarketOverviewCard />
-        <CategoryCards />
+        <StockAlertsPreviewSection />
         <WatchlistSection />
         <ChartSection />
         <ReportButton />

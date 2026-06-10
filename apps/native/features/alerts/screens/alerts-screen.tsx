@@ -1,11 +1,17 @@
 import { DrawerToggleButton } from "@react-navigation/drawer";
-import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Container } from "@/components/container";
 import { FIN_DATA_THEME, getFinDataMode } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
+import { StockAlertCard } from "../components/stock-alert-card";
+import { StockAlertEmptyState } from "../components/stock-alert-empty-state";
+import { useStockAlerts } from "../stock-alerts-context";
 
 export function AlertsScreen() {
+  const router = useRouter();
+  const { alerts } = useStockAlerts();
   const { colorScheme } = useColorScheme();
   const theme = getFinDataMode(colorScheme);
 
@@ -15,22 +21,49 @@ export function AlertsScreen() {
         <View style={[styles.header, { borderBottomColor: theme.border }]}>
           <DrawerToggleButton tintColor={theme.primary} />
           <Text style={[styles.title, { color: theme.primary }]}>
-            Price Alerts
+            Stock Alerts
           </Text>
-          <View style={styles.headerSpacer} />
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push("/alerts/new")}
+          >
+            <Text style={[styles.addText, { color: theme.primary }]}>Add</Text>
+          </Pressable>
         </View>
 
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.cardBorder },
-          ]}
+        <ScrollView
+          contentContainerStyle={styles.content}
+          contentInsetAdjustmentBehavior="automatic"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={[styles.cardTitle, { color: theme.text }]}>Alerts</Text>
-          <Text style={[styles.cardBody, { color: theme.textTertiary }]}>
-            Your active stock alerts will appear here once you create them.
-          </Text>
-        </View>
+          <View style={styles.summary}>
+            <Text style={[styles.summaryTitle, { color: theme.text }]}>
+              Manage alerts
+            </Text>
+            <Text style={[styles.summaryBody, { color: theme.textTertiary }]}>
+              Create, edit, or remove stock alerts from this screen.
+            </Text>
+          </View>
+
+          {alerts.length === 0 ? (
+            <StockAlertEmptyState
+              actionLabel="Create alert"
+              description="Set up your first stock alert so it shows up on Home and here."
+              onAction={() => router.push("/alerts/new")}
+              title="No stock alerts yet"
+            />
+          ) : (
+            <View style={styles.list}>
+              {alerts.map((alert) => (
+                <StockAlertCard
+                  key={alert.id}
+                  alert={alert}
+                  onPress={() => router.push(`/alerts/${alert.id}`)}
+                />
+              ))}
+            </View>
+          )}
+        </ScrollView>
       </View>
     </Container>
   );
@@ -49,25 +82,30 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingBottom: 16,
   },
-  headerSpacer: {
-    width: 40,
-  },
-  title: {
-    fontSize: 28,
+  addText: {
+    fontSize: FIN_DATA_THEME.typography.button,
     fontWeight: "700",
   },
-  card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 20,
-    gap: 8,
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
   },
-  cardTitle: {
+  content: {
+    paddingBottom: 120,
+    gap: 16,
+  },
+  summary: {
+    gap: 4,
+  },
+  summaryTitle: {
     fontSize: 18,
     fontWeight: "700",
   },
-  cardBody: {
+  summaryBody: {
     fontSize: FIN_DATA_THEME.typography.body,
     lineHeight: 20,
+  },
+  list: {
+    gap: 8,
   },
 });
