@@ -8,9 +8,8 @@ import { StockAlertsPreviewSection } from "@/features/alerts/components/stock-al
 import { NotificationHistoryPreviewSection } from "@/features/notifications/components/notification-history-preview-section";
 import { getFinDataMode } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
-import { ChartSection } from "../components/chart-section";
+
 import { MarketOverviewCard } from "../components/market-overview-card";
-import { ReportButton } from "../components/report-button";
 import { WatchlistSection } from "../components/watchlist-section";
 
 export function HomeScreen() {
@@ -53,8 +52,6 @@ export function HomeScreen() {
         <StockAlertsPreviewSection />
         <NotificationHistoryPreviewSection />
         <WatchlistSection />
-        <ChartSection />
-        <ReportButton />
       </ScrollView>
     </Container>
   );
