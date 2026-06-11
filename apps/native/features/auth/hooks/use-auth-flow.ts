@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 import { enableMockAuth } from "@/lib/mock-auth";
@@ -16,17 +16,17 @@ function useAuthFlow() {
   const [error, setError] = useState<string | null>(null);
   const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
   const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
-
-  function clearError() {
+  const clearError = useCallback(() => {
     if (error) {
       setError(null);
     }
-  }
+  }, [error]);
 
   const signInForm = useForm({
     defaultValues: {
       email: "",
       password: "",
+      rememberMe: true,
     },
     validators: {
       onSubmit: signInSchema,
@@ -38,6 +38,7 @@ function useAuthFlow() {
           {
             email: value.email.trim(),
             password: value.password,
+            rememberMe: value.rememberMe,
           },
           {
             onError(error) {
@@ -57,6 +58,11 @@ function useAuthFlow() {
       }
     },
   });
+
+  const toggleRememberMe = useCallback(() => {
+    signInForm.setFieldValue("rememberMe", (currentValue) => !currentValue);
+    clearError();
+  }, [clearError, signInForm]);
 
   const signUpForm = useForm({
     defaultValues: {
@@ -106,7 +112,7 @@ function useAuthFlow() {
   const googleLabel =
     mode === "sign-in" ? "Sign in with Google" : "Sign up with Google";
 
-  async function handleGoogleSignIn() {
+  const handleGoogleSignIn = useCallback(async () => {
     if (isAnySubmitting) return;
 
     setIsGoogleSubmitting(true);
@@ -141,34 +147,34 @@ function useAuthFlow() {
     } finally {
       setIsGoogleSubmitting(false);
     }
-  }
+  }, [isAnySubmitting, router]);
 
-  function toggleMode() {
+  const toggleMode = useCallback(() => {
     if (isAnySubmitting) return;
 
     setError(null);
     setMode((currentMode) =>
       currentMode === "sign-in" ? "sign-up" : "sign-in",
     );
-  }
+  }, [isAnySubmitting]);
 
-  function submitActiveForm() {
+  const submitActiveForm = useCallback(() => {
     if (isAnySubmitting) return;
 
     activeForm.handleSubmit();
-  }
+  }, [activeForm, isAnySubmitting]);
 
-  function submitSignInForm() {
+  const submitSignInForm = useCallback(() => {
     if (isAnySubmitting) return;
 
     signInForm.handleSubmit();
-  }
+  }, [isAnySubmitting, signInForm]);
 
-  function submitSignUpForm() {
+  const submitSignUpForm = useCallback(() => {
     if (isAnySubmitting) return;
 
     signUpForm.handleSubmit();
-  }
+  }, [isAnySubmitting, signUpForm]);
 
   return {
     activeForm,
@@ -187,6 +193,7 @@ function useAuthFlow() {
     submitLabel,
     switchLabel,
     title,
+    toggleRememberMe,
     toggleMode,
   };
 }

@@ -6,7 +6,7 @@ const emailSchema = z
   .min(1, "Email is required")
   .pipe(z.email("Enter a valid email address"));
 
-const signInSchema = z.object({
+const authCredentialsSchema = z.object({
   email: emailSchema,
   password: z
     .string()
@@ -14,7 +14,11 @@ const signInSchema = z.object({
     .min(8, "Use at least 8 characters"),
 });
 
-const signUpSchema = signInSchema.extend({
+const signInSchema = authCredentialsSchema.extend({
+  rememberMe: z.boolean(),
+});
+
+const signUpSchema = authCredentialsSchema.extend({
   name: z
     .string()
     .trim()

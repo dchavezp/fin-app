@@ -1,104 +1,246 @@
 # finn-app
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React Native, Expo, Hono, and more.
+`finn-app` is a Turborepo monorepo for a mobile-first finance application.
 
-## Features
+- Native app: Expo + React Native + Expo Router
+- API server: Hono on Node.js
+- Auth: Better Auth with Expo integration
+- Database: PostgreSQL + Drizzle ORM
+- Tooling: pnpm, Turbo, Biome, Husky
 
-- **TypeScript** - For type safety and improved developer experience
-- **React Native** - Build mobile apps using React
-- **Expo** - Tools for React Native development
-- **Hono** - Lightweight, performant server framework
-- **Node.js** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
-- **Turborepo** - Optimized monorepo build system
-- **Biome** - Linting and formatting
-- **Husky** - Git hooks for code quality
+## Overview
 
-## Getting Started
+The repo is split into two apps and a small set of shared packages:
 
-First, install the dependencies:
+```text
+finn-app/
+├── apps/
+│   ├── native/    # Expo mobile app
+│   └── server/    # Hono API server
+├── packages/
+│   ├── auth/      # Better Auth server configuration
+│   ├── db/        # Drizzle client, schema, migrations
+│   ├── env/       # Shared env validation
+│   └── config/    # Shared TypeScript config
+├── turbo.json
+└── package.json
+```
+
+Core dependency flow:
+
+```text
+apps/server -> packages/auth -> packages/db -> packages/env
+apps/native -> packages/env
+```
+
+## Architecture
+
+### Native app
+
+- `apps/native/app/` uses Expo Router file-based navigation.
+- The root layout provides React Query, navigation theme wiring, and gesture handling.
+- `apps/native/lib/auth-client.ts` configures the Better Auth Expo client and stores tokens in `expo-secure-store`.
+- Feature code lives under `apps/native/features/*`.
+
+### Server
+
+- `apps/server/src/index.ts` starts the Hono server on port `3000` by default.
+- CORS is configured from `CORS_ORIGIN`.
+- Auth routes are mounted at `/api/auth/*`.
+- Feature routes are mounted under `/api/alerts`, `/api/notifications`, and `/api/stocks`.
+- `GET /health` verifies database connectivity.
+
+### Shared packages
+
+- `packages/auth` exports the Better Auth server instance.
+- `packages/db` exports the Drizzle database client, schema, and migration helpers.
+- `packages/env` validates server and native environment variables with Zod.
+
+## Requirements
+
+- Node.js 20+
+- `pnpm` 11+
+- PostgreSQL
+- Expo Go or a native simulator/device for the mobile app
+
+## Setup
+
+Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-## Database Setup
-
-This project uses PostgreSQL with Drizzle ORM.
-
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
-
-3. Apply the schema to your database:
+Create your local environment files from the examples:
 
 ```bash
-pnpm run db:push
+cp apps/server/.env.example apps/server/.env
+cp apps/native/.env.example apps/native/.env
 ```
 
-Then, run the development server:
+Then update the copied files for your machine and credentials.
+
+For variable-by-variable setup details, see [`docs/environment.md`](./docs/environment.md).
+
+Server env lives in `apps/server/.env` and should include at least:
+
+```env
+NODE_ENV=development
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/finapp
+BETTER_AUTH_SECRET=replace-with-at-least-32-characters
+BETTER_AUTH_URL=http://localhost:3000
+CORS_ORIGIN=http://localhost:8081,http://<your-local-ip>:8081
+FINNHUB_API_KEY=...
+FCM_PROJECT_ID=...
+FCM_SERVICE_ACCOUNT_PATH=./secret-config/firebase-service-account.json
+```
+
+Native env is read from Expo public env variables and should include:
+
+```env
+EXPO_PUBLIC_SERVER_URL=http://<your-local-ip>:3000
+```
+
+Notes:
+
+- Use your machine's LAN IP for `EXPO_PUBLIC_SERVER_URL` when running on a physical device.
+- `BETTER_AUTH_SECRET` must be at least 32 characters.
+- `CORS_ORIGIN` accepts a comma-separated list of allowed browser origins.
+- Server env validation requires either `FCM_SERVICE_ACCOUNT_PATH` or `FCM_SERVICE_ACCOUNT_BASE64`.
+
+## Running The Project
+
+### Run everything
 
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
-Use the Expo Go app to run the mobile application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+This starts all Turbo `dev` tasks for the repo.
 
-## Git Hooks and Formatting
-
-- Initialize hooks: `pnpm run prepare`
-- Format and lint fix: `pnpm run check`
-
-## Railway Server Deployment
-
-The server is deployed from the repository root with the root `Dockerfile`. Railway uses `railway.json` to select the Dockerfile builder and `/health` as the deployment health check.
-
-Build the server image locally with:
+### Run only the server
 
 ```bash
-pnpm docker:build:server
+pnpm dev:server
 ```
 
-Run the server image locally with:
+Server URL:
+
+```text
+http://localhost:3000
+```
+
+Health check:
+
+```text
+http://localhost:3000/health
+```
+
+### Run only the native app
 
 ```bash
-pnpm docker:run:server
+pnpm dev:native
 ```
 
-This reads `apps/server/.env` directly.
-
-To keep the server running in Docker Desktop in detached mode, use:
+Inside `apps/native`, useful direct Expo commands are:
 
 ```bash
-pnpm docker:start:server
-pnpm docker:stop:server
+pnpm --filter native android
+pnpm --filter native ios
+pnpm --filter native web
+pnpm --filter native prebuild
 ```
 
-Start a local Postgres container with:
+## Database Workflow
+
+Push the current schema to the database:
+
+```bash
+pnpm db:push
+```
+
+Generate migrations:
+
+```bash
+pnpm db:generate
+```
+
+Run migrations:
+
+```bash
+pnpm db:migrate
+```
+
+Open Drizzle Studio:
+
+```bash
+pnpm db:studio
+```
+
+## Scripts
+
+### Root scripts
+
+| Script | What it does |
+| --- | --- |
+| `pnpm dev` | Runs all app `dev` tasks through Turbo |
+| `pnpm build` | Builds all packages and apps |
+| `pnpm check-types` | Runs TypeScript checks across the monorepo |
+| `pnpm check` | Runs Biome linting, formatting, and import organization |
+| `pnpm prepare` | Initializes Husky hooks |
+| `pnpm dev:server` | Runs only the Hono server in watch mode |
+| `pnpm dev:native` | Runs only the Expo app |
+| `pnpm db:push` | Pushes Drizzle schema to PostgreSQL |
+| `pnpm db:generate` | Generates Drizzle migrations |
+| `pnpm db:migrate` | Runs Drizzle migrations |
+| `pnpm db:studio` | Opens Drizzle Studio |
+| `pnpm build:android` | Builds a release Android APK for arm64 |
+| `pnpm build:android:aab` | Builds an Android App Bundle |
+| `pnpm build:android:apk:arm64` | Builds an arm64 release APK |
+| `pnpm build:android:apk:universal` | Builds a universal release APK |
+| `pnpm build:android:dev` | Builds a debug Android APK |
+| `pnpm docker:db:up` | Starts a local PostgreSQL Docker container |
+| `pnpm docker:build:server` | Builds the server Docker image |
+| `pnpm docker:run:server` | Runs the server Docker image in the foreground |
+| `pnpm docker:start:server` | Runs the server Docker image in detached mode |
+| `pnpm docker:stop:server` | Stops the detached server container |
+| `pnpm docker:migrate` | Runs migrations from the Docker image |
+
+### Package-level scripts
+
+- `apps/native`: `dev`, `android`, `ios`, `web`, `prebuild`, Android build variants
+- `apps/server`: `dev`, `build`, `start`, `compile`, `check-types`
+- `packages/db`: `db:push`, `db:generate`, `db:studio`, `db:migrate`
+
+## Development Workflow
+
+Common commands:
+
+```bash
+pnpm check
+pnpm check-types
+pnpm build
+```
+
+Notes:
+
+- The repo uses `pnpm` workspaces with `node-linker=isolated`.
+- Turbo handles package build ordering.
+- The repo currently does not include a dedicated test runner.
+
+## Docker And Railway
+
+The root `Dockerfile` is used for server deployment.
+
+Local Docker helpers:
 
 ```bash
 pnpm docker:db:up
+pnpm docker:build:server
+pnpm docker:run:server
 ```
 
-The database script uses this connection string:
-
-```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/finapp
-```
-
-If the server also runs inside Docker and needs to reach a database on your host machine, use `host.docker.internal` instead of `localhost` because `localhost` inside Docker means the container itself.
-
-Run migrations in Docker with:
-
-```bash
-pnpm docker:migrate
-```
-
-This command reads `apps/server/.env`, so use your Neon `DATABASE_URL` there for Neon migrations, or use `host.docker.internal` when migrating a database exposed on your host machine.
-
-Required Railway variables:
+Railway-focused variables typically include:
 
 ```env
 NODE_ENV=production
@@ -113,55 +255,83 @@ FCM_PROJECT_ID=...
 FCM_SERVICE_ACCOUNT_BASE64=...
 ```
 
-Do not use local Docker values on Railway. `host.docker.internal`, `localhost`, and `127.0.0.1` are only for local development. For Neon, set `DATABASE_URL` to the Neon connection string, usually with `sslmode=require`.
+If the server runs inside Docker and needs a database on the host machine, use `host.docker.internal` instead of `localhost`.
 
-`CORS_ORIGIN` accepts a comma-separated list. Include Expo web origins used in development and any production web origin that calls the API from a browser.
+## Agent Methodology
 
-Generate `FCM_SERVICE_ACCOUNT_BASE64` from the Firebase service account JSON:
+This repo is set up to work well with code agents. The expected operating style is:
+
+1. Read the codebase before changing it.
+2. Prefer the smallest correct change.
+3. Keep app-specific logic in the correct boundary.
+4. Verify changes with typechecks, linting, or builds when practical.
+5. Avoid reverting unrelated user changes in a dirty worktree.
+
+### Agent OS Workflow
+
+This repo also uses the `agent-os` workflow for product context, specs, and standards.
+
+Main commands:
+
+- `plan-product` to create or update `docs/product/mission.md`, `docs/product/roadmap.md`, and `docs/product/tech-stack.md`
+- `shape-spec` to plan significant work before implementation and save a spec folder under `docs/specs/`
+- `discover-standards` to extract repeatable patterns from the codebase into `docs/standards/`
+- `inject-standards` to load relevant standards into the current task context
+- `index-standards` to rebuild `docs/standards/index.yml`
+
+Recommended flow:
+
+1. Run `plan-product` when product docs are missing or outdated.
+2. Run `discover-standards` to document important repo-specific patterns.
+3. Run `index-standards` after adding or removing standards manually.
+4. Run `shape-spec` in plan mode for larger features or refactors.
+5. Use `inject-standards` before or during implementation so the active task follows repo standards.
+
+What each command produces:
+
+- `plan-product` writes product context in `docs/product/`
+- `shape-spec` creates `docs/specs/YYYY-MM-DD-HHMM-feature-slug/`
+- `discover-standards` writes concise standards to `docs/standards/<area>/`
+- `index-standards` maintains the descriptions used for standard discovery
+
+`shape-spec` workflow expectations:
+
+- it must be run in plan mode
+- task 1 is always saving spec documentation before implementation starts
+- the spec folder should include `plan.md`, `shape.md`, `standards.md`, `references.md`, and optional `visuals/`
+
+`discover-standards` workflow expectations:
+
+- focus on unusual, opinionated, or repeated repo patterns
+- keep standards concise and scannable for agent context windows
+- ask why the pattern exists before writing the standard
+
+`inject-standards` usage modes:
+
+- auto-suggest relevant standards from `docs/standards/index.yml`
+- inject specific folders or files when the applicable standards are already known
+
+Recommended agent split for non-trivial work:
+
+- `native-agent` for `apps/native` work, Expo Router flows, React Native UI, and mobile auth wiring
+- `be-agent` for `apps/server`, `packages/auth`, `packages/db`, and `packages/env`
+- `qa-agent` after implementation for verification, regression checks, and testing gaps
+- `review-agent` before wrapping up significant changes to catch bugs and missing validation
+
+Native code conventions:
+
+- Keep UI components declarative.
+- Move orchestration, navigation decisions, and business rules into focused hooks.
+- Put reusable feature code under `apps/native/features/{feature}`.
+- Keep `apps/native/components` reserved for app-wide shared UI.
+
+## Quick Start
 
 ```bash
-base64 -w 0 firebase-service-account.json
+pnpm install
+pnpm db:push
+pnpm dev:server
+pnpm dev:native
 ```
 
-For local development, keep using a file path instead:
-
-```env
-FCM_SERVICE_ACCOUNT_PATH=./secret-config/firebase-service-account.json
-```
-
-For Expo on a physical device, point the native app at the machine running the server:
-
-```env
-EXPO_PUBLIC_SERVER_URL=http://<your-local-ip>:3000
-```
-
-Before production traffic, run database migrations against the Railway database:
-
-```bash
-DATABASE_URL="postgresql://..." pnpm db:migrate
-```
-
-## Project Structure
-
-```
-finn-app/
-├── apps/
-│   ├── native/      # Mobile application (React Native, Expo)
-│   └── server/      # Backend API (Hono)
-├── packages/
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `pnpm run dev`: Start all applications in development mode
-- `pnpm run build`: Build all applications
-- `pnpm run dev:server`: Start only the server
-- `pnpm run check-types`: Check TypeScript types across all apps
-- `pnpm run dev:native`: Start the React Native/Expo development server
-- `pnpm run db:push`: Push schema changes to database
-- `pnpm run db:generate`: Generate database client/types
-- `pnpm run db:migrate`: Run database migrations
-- `pnpm run db:studio`: Open database studio UI
-- `pnpm run check`: Run Biome formatting and linting
+If you're running on a phone, make sure `EXPO_PUBLIC_SERVER_URL` points to your machine's local IP, not `localhost`.

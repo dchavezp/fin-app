@@ -1,4 +1,4 @@
-import { AntDesign, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -15,6 +15,7 @@ import { FIN_DATA_THEME } from "@/lib/constants";
 
 import { useAuthFlow } from "../hooks/use-auth-flow";
 import { getErrorMessage } from "../utils/auth-errors";
+import { PasswordInput } from "./password-input";
 
 const { colors, radii, sizes, spacing, typography } = FIN_DATA_THEME;
 
@@ -36,6 +37,7 @@ function AuthFlow() {
     submitLabel,
     switchLabel,
     title,
+    toggleRememberMe,
     toggleMode,
   } = useAuthFlow();
 
@@ -135,7 +137,7 @@ function AuthFlow() {
                               field.handleChange(value);
                               clearError();
                             }}
-                            placeholder="Tanya Hill"
+                            placeholder="John Doe"
                             placeholderTextColor={colors.muted}
                             returnKeyType="next"
                             style={styles.input}
@@ -173,32 +175,17 @@ function AuthFlow() {
                       </signInForm.Field>
                       <signInForm.Field name="password">
                         {(field) => (
-                          <View style={styles.fieldGroup}>
-                            <Text style={styles.label}>Password</Text>
-                            <View style={styles.passwordInputShell}>
-                              <TextInput
-                                accessibilityLabel="Password"
-                                autoComplete="password"
-                                onBlur={field.handleBlur}
-                                onChangeText={(value) => {
-                                  field.handleChange(value);
-                                  clearError();
-                                }}
-                                onSubmitEditing={submitSignInForm}
-                                placeholder="Password"
-                                placeholderTextColor={colors.muted}
-                                returnKeyType="done"
-                                secureTextEntry
-                                style={styles.passwordInput}
-                                value={field.state.value}
-                              />
-                              <Feather
-                                color={colors.muted}
-                                name="eye-off"
-                                size={17}
-                              />
-                            </View>
-                          </View>
+                          <PasswordInput
+                            key="sign-in-password"
+                            label="Password"
+                            onBlur={field.handleBlur}
+                            onChangeText={(value) => {
+                              field.handleChange(value);
+                              clearError();
+                            }}
+                            onSubmitEditing={submitSignInForm}
+                            value={field.state.value}
+                          />
                         )}
                       </signInForm.Field>
                     </>
@@ -229,32 +216,17 @@ function AuthFlow() {
                       </signUpForm.Field>
                       <signUpForm.Field name="password">
                         {(field) => (
-                          <View style={styles.fieldGroup}>
-                            <Text style={styles.label}>Password</Text>
-                            <View style={styles.passwordInputShell}>
-                              <TextInput
-                                accessibilityLabel="Password"
-                                autoComplete="password"
-                                onBlur={field.handleBlur}
-                                onChangeText={(value) => {
-                                  field.handleChange(value);
-                                  clearError();
-                                }}
-                                onSubmitEditing={submitSignUpForm}
-                                placeholder="Password"
-                                placeholderTextColor={colors.muted}
-                                returnKeyType="done"
-                                secureTextEntry
-                                style={styles.passwordInput}
-                                value={field.state.value}
-                              />
-                              <Feather
-                                color={colors.muted}
-                                name="eye-off"
-                                size={17}
-                              />
-                            </View>
-                          </View>
+                          <PasswordInput
+                            key="sign-up-password"
+                            label="Password"
+                            onBlur={field.handleBlur}
+                            onChangeText={(value) => {
+                              field.handleChange(value);
+                              clearError();
+                            }}
+                            onSubmitEditing={submitSignUpForm}
+                            value={field.state.value}
+                          />
                         )}
                       </signUpForm.Field>
                     </>
@@ -263,10 +235,37 @@ function AuthFlow() {
                   {mode === "sign-in" ? (
                     <View style={styles.signInExtras}>
                       <Text style={styles.forgotText}>Forget password?</Text>
-                      <View style={styles.keepRow}>
-                        <View style={styles.checkbox} />
-                        <Text style={styles.keepText}>Keep me Login</Text>
-                      </View>
+                      <signInForm.Field name="rememberMe">
+                        {(field) => (
+                          <Pressable
+                            accessibilityLabel="Keep me logged in"
+                            accessibilityRole="checkbox"
+                            accessibilityState={{ checked: field.state.value }}
+                            onPress={toggleRememberMe}
+                            style={styles.keepRow}
+                          >
+                            <View
+                              style={[
+                                styles.checkbox,
+                                field.state.value
+                                  ? styles.checkboxChecked
+                                  : null,
+                              ]}
+                            >
+                              {field.state.value ? (
+                                <MaterialCommunityIcons
+                                  color={colors.black}
+                                  name="check"
+                                  size={12}
+                                />
+                              ) : null}
+                            </View>
+                            <Text style={styles.keepText}>
+                              Keep me logged in
+                            </Text>
+                          </Pressable>
+                        )}
+                      </signInForm.Field>
                     </View>
                   ) : null}
 
@@ -419,22 +418,6 @@ const styles = StyleSheet.create({
     height: sizes.inputHeight,
     paddingHorizontal: spacing.md,
   },
-  passwordInputShell: {
-    alignItems: "center",
-    backgroundColor: colors.input,
-    borderColor: colors.line,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    flexDirection: "row",
-    height: sizes.inputHeight,
-    paddingHorizontal: spacing.md,
-  },
-  passwordInput: {
-    color: colors.text,
-    flex: 1,
-    fontSize: typography.body,
-    padding: 0,
-  },
   signInExtras: {
     gap: spacing.md,
   },
@@ -450,12 +433,18 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   checkbox: {
+    alignItems: "center",
     backgroundColor: colors.checkbox,
     borderColor: colors.line,
     borderRadius: radii.xs,
     borderWidth: 1,
     height: sizes.checkbox,
+    justifyContent: "center",
     width: sizes.checkbox,
+  },
+  checkboxChecked: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   keepText: {
     color: colors.muted,
