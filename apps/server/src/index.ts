@@ -52,8 +52,6 @@ app.get("/", (c) => {
 
 export type AppType = typeof app;
 
-await checkDatabaseConnection();
-
 serve(
   {
     fetch: app.fetch,
@@ -62,6 +60,10 @@ serve(
   },
   (info) => {
     logger.info({ port: info.port }, "server started");
+
+    checkDatabaseConnection().catch((error) => {
+      logger.error({ error }, "database connection failed at startup");
+    });
 
     startWebSocket();
     refreshWebSocketSubscriptions();

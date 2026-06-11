@@ -113,6 +113,8 @@ FCM_PROJECT_ID=...
 FCM_SERVICE_ACCOUNT_BASE64=...
 ```
 
+Do not use local Docker values on Railway. `host.docker.internal`, `localhost`, and `127.0.0.1` are only for local development. For Neon, set `DATABASE_URL` to the Neon connection string, usually with `sslmode=require`.
+
 `CORS_ORIGIN` accepts a comma-separated list. Include Expo web origins used in development and any production web origin that calls the API from a browser.
 
 Generate `FCM_SERVICE_ACCOUNT_BASE64` from the Firebase service account JSON:
