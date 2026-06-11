@@ -50,6 +50,7 @@ COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=prod-deps /app/apps/server/package.json /app/apps/server/package.json
 COPY --from=prod-deps /app/apps/server/node_modules /app/apps/server/node_modules
 COPY --from=build /app/apps/server/dist /app/apps/server/dist
+COPY --from=build /app/packages/db/src/migrations /app/packages/db/src/migrations
 
 EXPOSE 3000
 

@@ -1,5 +1,10 @@
 import { auth } from "@finn-app/auth";
-import { checkDatabaseConnection, db, priceAlert } from "@finn-app/db";
+import {
+  checkDatabaseConnection,
+  db,
+  priceAlert,
+  runMigrations,
+} from "@finn-app/db";
 import { corsOrigins } from "@finn-app/env/server";
 import { serve } from "@hono/node-server";
 import { isNull } from "drizzle-orm";
@@ -60,6 +65,10 @@ serve(
   },
   (info) => {
     logger.info({ port: info.port }, "server started");
+
+    runMigrations().catch((error) => {
+      logger.error({ error }, "migrations failed");
+    });
 
     checkDatabaseConnection().catch((error) => {
       logger.error({ error }, "database connection failed at startup");
