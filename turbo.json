@@ -36,6 +36,21 @@
       "dependsOn": ["^build"],
       "passThroughEnv": ["ANDROID_HOME", "ANDROID_SDK_ROOT", "JAVA_HOME"]
     },
+    "build:android:aab": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "passThroughEnv": ["ANDROID_HOME", "ANDROID_SDK_ROOT", "JAVA_HOME"]
+    },
+    "build:android:apk:arm64": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "passThroughEnv": ["ANDROID_HOME", "ANDROID_SDK_ROOT", "JAVA_HOME"]
+    },
+    "build:android:apk:universal": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "passThroughEnv": ["ANDROID_HOME", "ANDROID_SDK_ROOT", "JAVA_HOME"]
+    },
     "build:android:dev": {
       "cache": false,
       "dependsOn": ["^build"],
