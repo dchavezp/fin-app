@@ -1,6 +1,6 @@
 import { auth } from "@finn-app/auth";
 import { checkDatabaseConnection, db, priceAlert } from "@finn-app/db";
-import { env } from "@finn-app/env/server";
+import { corsOrigins } from "@finn-app/env/server";
 import { serve } from "@hono/node-server";
 import { isNull } from "drizzle-orm";
 import { Hono } from "hono";
@@ -18,12 +18,13 @@ import {
 import { stocksRoutes } from "@/modules/stocks/stocks.routes";
 
 const app = new Hono();
+const port = getPort();
 
 app.use(honoLogger());
 app.use(
   "/*",
   cors({
-    origin: env.CORS_ORIGIN,
+    origin: corsOrigins,
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -56,7 +57,8 @@ await checkDatabaseConnection();
 serve(
   {
     fetch: app.fetch,
-    port: 3000,
+    hostname: "0.0.0.0",
+    port,
   },
   (info) => {
     logger.info({ port: info.port }, "server started");
@@ -80,4 +82,14 @@ async function refreshWebSocketSubscriptions() {
   } catch (error) {
     logger.error({ error }, "failed to refresh WebSocket subscriptions");
   }
+}
+
+function getPort() {
+  const port = Number(process.env.PORT ?? 3000);
+
+  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
+    throw new Error("PORT must be an integer between 1 and 65535.");
+  }
+
+  return port;
 }

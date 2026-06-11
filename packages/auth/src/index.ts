@@ -1,7 +1,7 @@
 import { expo } from "@better-auth/expo";
 import { createDb } from "@finn-app/db";
 import * as schema from "@finn-app/db/schema/auth";
-import { env } from "@finn-app/env/server";
+import { corsOrigins, env } from "@finn-app/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
@@ -15,7 +15,7 @@ export function createAuth() {
       schema: schema,
     }),
     trustedOrigins: [
-      env.CORS_ORIGIN,
+      ...corsOrigins,
       "finn-app://",
       "exp://",
       "http://localhost:8081",

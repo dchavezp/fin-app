@@ -1,9 +1,22 @@
+import { Buffer } from "node:buffer";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { env } from "@finn-app/env/server";
 
 function loadServiceAccount() {
+  if (env.FCM_SERVICE_ACCOUNT_BASE64) {
+    return JSON.parse(
+      Buffer.from(env.FCM_SERVICE_ACCOUNT_BASE64, "base64").toString("utf-8"),
+    );
+  }
+
+  if (!env.FCM_SERVICE_ACCOUNT_PATH) {
+    throw new Error(
+      "Missing FCM service account configuration. Set FCM_SERVICE_ACCOUNT_BASE64 or FCM_SERVICE_ACCOUNT_PATH.",
+    );
+  }
+
   const filePath = resolve(env.FCM_SERVICE_ACCOUNT_PATH);
 
   return JSON.parse(readFileSync(filePath, "utf-8"));
