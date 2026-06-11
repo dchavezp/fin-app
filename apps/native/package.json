@@ -10,7 +10,10 @@
     "ios": "expo run:ios",
     "prebuild": "expo prebuild",
     "web": "expo start --web",
-    "build:android": "expo prebuild --clean && cd android && ./gradlew assembleRelease",
+    "build:android": "export NODE_ENV=production && expo prebuild --clean && cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a",
+    "build:android:aab": "export NODE_ENV=production && expo prebuild --clean && cd android && ./gradlew bundleRelease",
+    "build:android:apk:arm64": "export NODE_ENV=production && expo prebuild --clean && cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a",
+    "build:android:apk:universal": "export NODE_ENV=production && expo prebuild --clean && cd android && ./gradlew assembleRelease",
     "build:android:dev": "expo prebuild --clean && cd android && ./gradlew assembleDebug"
   },
   "dependencies": {
@@ -25,6 +28,7 @@
     "better-auth": "catalog:",
     "dotenv": "catalog:",
     "expo": "~54.0.2",
+    "expo-build-properties": "~1.0.10",
     "expo-constants": "~18.0.0",
     "expo-crypto": "~15.0.0",
     "expo-dev-client": "~6.0.21",
